@@ -1,0 +1,22 @@
+# Development files
+.github/
+.vscode/
+.idea/
+coverage/
+*.log
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+
+# Documentation source (keep compiled docs)
+# docs/ - included
+
+# Git
+.git/
+.gitignore
+
+# Example/demo files
+examples/
+demo/

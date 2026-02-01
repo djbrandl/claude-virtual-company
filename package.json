@@ -1,0 +1,46 @@
+{
+  "name": "claude-virtual-company",
+  "version": "1.0.0",
+  "description": "A Claude Code skill framework that simulates a virtual software development company with hierarchical roles, governance, and quality gates",
+  "main": "src/install.js",
+  "bin": {
+    "claude-virtual-company": "./bin/cli.js",
+    "cvc": "./bin/cli.js"
+  },
+  "scripts": {
+    "postinstall": "node src/install.js --auto"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "agent",
+    "skills",
+    "software-development",
+    "virtual-company",
+    "orchestration",
+    "code-review",
+    "git-flow"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_USERNAME/claude-virtual-company.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/claude-virtual-company/issues"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/claude-virtual-company#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "skills/",
+    "templates/",
+    "scripts/",
+    "docs/"
+  ]
+}

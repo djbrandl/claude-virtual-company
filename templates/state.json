@@ -1,0 +1,12 @@
+{
+  "phase": "idle",
+  "goal": null,
+  "project_id": null,
+  "started": null,
+  "current_role": null,
+  "completed_phases": [],
+  "pending_proposals": 0,
+  "active_agents": [],
+  "blockers": [],
+  "last_activity": null
+}
