@@ -107,8 +107,39 @@ Write to `.company/artifacts/architect/`:
 ```markdown
 # Component Design
 
+<!-- TIER:SUMMARY -->
+## Summary
+[One-line architecture description: e.g., "3-tier REST API with Auth, User, and Session services backed by PostgreSQL"]
+<!-- /TIER:SUMMARY -->
+
+<!-- TIER:DECISIONS -->
 ## System Overview
-[High-level diagram description]
+
+\`\`\`mermaid
+graph TD
+    subgraph "API Layer"
+        API[API Gateway]
+    end
+
+    subgraph "Services"
+        Auth[AuthService]
+        User[UserService]
+        Session[SessionService]
+    end
+
+    subgraph "Data"
+        DB[(PostgreSQL)]
+        Cache[(Redis)]
+    end
+
+    API --> Auth
+    API --> User
+    Auth --> Session
+    Auth --> DB
+    Auth --> Cache
+    User --> DB
+    Session --> Cache
+\`\`\`
 
 ## Components
 
@@ -152,13 +183,36 @@ Write to `.company/artifacts/architect/`:
 ```markdown
 # API Contracts
 
+<!-- TIER:SUMMARY -->
+## Summary
+REST API at `/api/v1` with Bearer token auth. Key flows: login, register, refresh token.
+<!-- /TIER:SUMMARY -->
+
+<!-- TIER:DECISIONS -->
 ## Base URL
 `/api/v1`
 
 ## Authentication
 Bearer token in Authorization header
 
----
+## Key Flow: Authentication
+
+\`\`\`mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as API
+    participant Auth as AuthService
+    participant DB as Database
+
+    C->>A: POST /auth/login
+    A->>Auth: validate(email, password)
+    Auth->>DB: findUserByEmail(email)
+    DB-->>Auth: user
+    Auth->>Auth: verifyPassword(password, hash)
+    Auth-->>A: {token, refreshToken}
+    A-->>C: 200 {token, refreshToken, expiresIn}
+\`\`\`
+<!-- /TIER:DECISIONS -->
 
 ## Endpoints
 
@@ -221,6 +275,35 @@ Bearer token in Authorization header
 
 ```markdown
 # Data Model
+
+<!-- TIER:SUMMARY -->
+## Summary
+PostgreSQL with User and Session entities. User 1:N Session relationship.
+<!-- /TIER:SUMMARY -->
+
+<!-- TIER:DECISIONS -->
+## Entity Relationships
+
+\`\`\`mermaid
+erDiagram
+    User ||--o{ Session : has
+    User {
+        uuid id PK
+        varchar email UK
+        varchar passwordHash
+        varchar name
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    Session {
+        uuid id PK
+        uuid userId FK
+        varchar token UK
+        timestamp expiresAt
+        timestamp createdAt
+    }
+\`\`\`
+<!-- /TIER:DECISIONS -->
 
 ## Entities
 
@@ -298,13 +381,20 @@ Create `.company/artifacts/architect/handoff-planning.md`:
 ```markdown
 # Handoff: Architect → Tech Lead
 
+<!-- TIER:SUMMARY -->
+## Summary
+Design complete. [N] components, [M] API endpoints, [X] entities defined.
+See component-design.md for architecture diagram, api-contracts.md for flow diagrams.
+<!-- /TIER:SUMMARY -->
+
+<!-- TIER:DECISIONS -->
 ## Phase
 Design to Planning
 
 ## Deliverables
-- component-design.md
-- api-contracts.md
-- data-model.md
+- component-design.md (includes system architecture diagram)
+- api-contracts.md (includes sequence diagrams)
+- data-model.md (includes ER diagram)
 - integration-design.md
 
 ## Acceptance Criteria for Tech Lead
@@ -326,6 +416,7 @@ ls .company/artifacts/architect/
 1. [Highest priority component]
 2. [Second priority]
 3. [etc.]
+<!-- /TIER:DECISIONS -->
 ```
 
 ---

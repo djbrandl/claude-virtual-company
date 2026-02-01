@@ -107,7 +107,28 @@ Write to `.company/artifacts/tech-lead/feature-spec.md`:
 ```markdown
 # Feature Breakdown
 
+<!-- TIER:SUMMARY -->
+## Summary
+[Project name]: [N] features across [M] priority levels. Critical path: [F1 → F2 → F3].
+<!-- /TIER:SUMMARY -->
+
+<!-- TIER:DECISIONS -->
 ## Project: [Name]
+
+## Feature Dependency Graph
+
+\`\`\`mermaid
+graph LR
+    F1[F1: Auth] --> F2[F2: Profile]
+    F1 --> F3[F3: Dashboard]
+    F2 --> F4[F4: Settings]
+    F3 --> F5[F5: Analytics]
+
+    style F1 fill:#f9f,stroke:#333
+    style F3 fill:#bbf,stroke:#333
+\`\`\`
+
+**Legend**: Pink = Critical Path, Blue = Parallel Opportunity
 
 ## Features Overview
 
@@ -155,13 +176,43 @@ Write to `.company/artifacts/tech-lead/feature-spec.md`:
 ```markdown
 # Task Breakdown
 
-## Dependency Graph
+<!-- TIER:SUMMARY -->
+## Summary
+[N] tasks across [M] waves. Wave 1 has [X] parallel tasks. Critical path: [T1.1 → T1.2 → T1.5].
+<!-- /TIER:SUMMARY -->
 
+<!-- TIER:DECISIONS -->
+## Execution Waves
+
+\`\`\`mermaid
+graph LR
+    subgraph "Wave 1 (Parallel)"
+        T1_1[T1.1: User Model]
+        T1_4[T1.4: Token Service]
+    end
+
+    subgraph "Wave 2 (Parallel)"
+        T1_2[T1.2: Register API]
+        T1_3[T1.3: Login API]
+    end
+
+    subgraph "Wave 3"
+        T1_5[T1.5: Auth Tests]
+    end
+
+    subgraph "Wave 4"
+        T1_6[T1.6: E2E Tests]
+    end
+
+    T1_1 --> T1_2
+    T1_1 --> T1_3
+    T1_4 --> T1_2
+    T1_4 --> T1_3
+    T1_2 --> T1_5
+    T1_3 --> T1_5
+    T1_5 --> T1_6
 \`\`\`
-F1: Auth ──────┬──▶ F2: Profile ──▶ F4: Settings
-              │
-              └──▶ F3: Dashboard ──▶ F5: Analytics
-\`\`\`
+<!-- /TIER:DECISIONS -->
 
 ## Task List
 
@@ -263,6 +314,14 @@ TaskList()
 \`\`\`
 
 ## Parallel Execution Plan
+
+\`\`\`mermaid
+graph LR
+    W1[Wave 1: T1.1, T1.4] --> W2[Wave 2: T1.2, T1.3]
+    W2 --> W3[Wave 3: T1.5]
+    W3 --> W4[Wave 4: T1.6]
+\`\`\`
+
 - Wave 1: T1.1, T1.4 (no dependencies)
 - Wave 2: T1.2, T1.3 (after Wave 1)
 - Wave 3: T1.5 (after Wave 2)

@@ -72,6 +72,119 @@ npm test -- --grep="Auth"
 
 ---
 
+## Mermaid Diagrams
+
+Use Mermaid diagrams to convey relationships efficiently. Sub-agents read the Mermaid source as structured text, making it an effective way to communicate topology and flows.
+
+### When to Use Mermaid
+
+| Diagram Type | Use Case | Context Efficiency |
+|--------------|----------|-------------------|
+| `graph LR/TD` | Component relationships, service boundaries | High |
+| `sequenceDiagram` | API flows, request/response patterns | High |
+| `erDiagram` | Data model relationships | Medium |
+| `flowchart` | Decision logic, state machines | Medium |
+
+### When to Use Prose Instead
+
+- Acceptance criteria (needs checkboxes)
+- Verification commands (needs executable code)
+- Rationale/decisions (narrative form)
+
+### Guidelines
+
+1. **Keep diagrams small** - 5-10 nodes maximum
+2. **Place in DECISIONS tier** - relationships are key implementation context
+3. **Pair with brief annotations** - diagram shows "what", text explains "why"
+4. **Use consistent naming** - match component/service names across documents
+
+### Component Diagram Template
+
+```mermaid
+graph TD
+    subgraph "API Layer"
+        API[API Gateway]
+    end
+
+    subgraph "Services"
+        Auth[AuthService]
+        User[UserService]
+    end
+
+    subgraph "Data"
+        DB[(PostgreSQL)]
+        Cache[(Redis)]
+    end
+
+    API --> Auth
+    API --> User
+    Auth --> DB
+    Auth --> Cache
+    User --> DB
+```
+
+### Sequence Diagram Template
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as API
+    participant S as Service
+    participant D as Database
+
+    C->>A: POST /login
+    A->>S: validate(credentials)
+    S->>D: findUser(email)
+    D-->>S: user
+    S-->>A: token
+    A-->>C: 200 {token}
+```
+
+### ER Diagram Template
+
+```mermaid
+erDiagram
+    User ||--o{ Session : has
+    User {
+        uuid id PK
+        string email UK
+        string passwordHash
+    }
+    Session {
+        uuid id PK
+        uuid userId FK
+        string token UK
+        datetime expiresAt
+    }
+```
+
+### Dependency Graph Template (for Tech Lead)
+
+```mermaid
+graph LR
+    subgraph "Wave 1"
+        T1[Task 1.1]
+        T4[Task 1.4]
+    end
+
+    subgraph "Wave 2"
+        T2[Task 1.2]
+        T3[Task 1.3]
+    end
+
+    subgraph "Wave 3"
+        T5[Task 1.5]
+    end
+
+    T1 --> T2
+    T1 --> T3
+    T4 --> T5
+    T2 --> T5
+    T3 --> T5
+```
+
+---
+
 ## Context Loading Utilities
 
 ### Load by Tier (bash patterns for role skills)

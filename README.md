@@ -406,12 +406,38 @@ trimSessionLog('.planning/STATE.md', 10);
 archiveAndResetState('.planning/STATE.md', '.planning/archive/v1.0/');
 ```
 
+### Mermaid Diagrams
+
+Architect and Tech Lead roles use Mermaid diagrams to convey relationships efficiently. Claude reads the Mermaid source as structured text, making it effective for communicating:
+
+| Diagram Type | Use Case |
+|--------------|----------|
+| `graph TD/LR` | Component relationships, service boundaries |
+| `sequenceDiagram` | API flows, request/response patterns |
+| `erDiagram` | Data model relationships |
+| Dependency graphs | Task waves, parallel execution |
+
+Example component diagram:
+
+```mermaid
+graph TD
+    API[API Gateway] --> Auth[AuthService]
+    API --> User[UserService]
+    Auth --> DB[(PostgreSQL)]
+    Auth --> Cache[(Redis)]
+```
+
+Guidelines:
+- Keep diagrams small (5-10 nodes max)
+- Place in DECISIONS tier for implementation context
+- Use consistent naming across documents
+
 ### Writing Tiered Documents
 
 When creating handoffs or key artifacts, structure them with tiers:
 
 1. **SUMMARY tier**: One-liner decisions, tech choices, key constraints
-2. **DECISIONS tier**: Acceptance criteria, verification commands, must-know details
+2. **DECISIONS tier**: Acceptance criteria, verification commands, Mermaid diagrams
 3. **FULL tier**: Rationale, alternatives considered, detailed context
 
 This ensures downstream roles get exactly the context they need without loading historical rationale they don't.
