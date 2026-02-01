@@ -72,7 +72,7 @@ ${colors.bright}AFTER INSTALLATION${colors.reset}
   ${colors.yellow}/company "Build a user authentication system"${colors.reset}
 
 ${colors.bright}DOCUMENTATION${colors.reset}
-  https://github.com/YOUR_USERNAME/claude-virtual-company#readme
+  https://github.com/djbrandl/claude-virtual-company#readme
 `);
 }
 
@@ -307,7 +307,7 @@ ${colors.bright}Project Manager (GSD-Inspired):${colors.reset}
   /company-milestone       Complete and archive milestone
 
 ${colors.bright}Documentation:${colors.reset}
-  ${colors.blue}https://github.com/YOUR_USERNAME/claude-virtual-company${colors.reset}
+  ${colors.blue}https://github.com/djbrandl/claude-virtual-company${colors.reset}
 `);
 }
 

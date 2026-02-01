@@ -112,11 +112,98 @@ function copyDirectory(src, dest, options = {}) {
   return results;
 }
 
+/**
+ * Default configuration values
+ */
+const DEFAULT_CONFIG = {
+  company: {
+    name: 'Virtual Company',
+    initialized: false
+  },
+  quality: {
+    test_coverage_minimum: 80,
+    require_tests: {
+      unit: 'required',
+      integration: 'recommended',
+      e2e: 'required_for_user_flows'
+    },
+    require_code_review: true
+  },
+  git_flow: {
+    strategy: 'gitflow',
+    require_pr: true,
+    squash_on_merge: true
+  },
+  hiring: {
+    auto_hire: true,
+    require_ceo_approval_for_new_roles: false
+  }
+};
+
+/**
+ * Default state values
+ */
+const DEFAULT_STATE = {
+  phase: 'idle',
+  goal: null,
+  branch: null,
+  started: null,
+  completed_phases: [],
+  active_agents: [],
+  blockers: []
+};
+
+/**
+ * Get configuration with defaults merged in
+ * Provides graceful fallback when config file is missing or partial
+ * @param {string} projectPath - Project root path (default: cwd)
+ * @returns {object} Configuration with defaults applied
+ */
+function getConfigWithDefaults(projectPath = process.cwd()) {
+  const configPath = path.join(projectPath, '.company', 'config.json');
+  const loaded = readJSON(configPath, {});
+  return deepMerge(DEFAULT_CONFIG, loaded);
+}
+
+/**
+ * Get state with defaults merged in
+ * Provides graceful fallback when state file is missing or partial
+ * @param {string} projectPath - Project root path (default: cwd)
+ * @returns {object} State with defaults applied
+ */
+function getStateWithDefaults(projectPath = process.cwd()) {
+  const statePath = path.join(projectPath, '.company', 'state.json');
+  const loaded = readJSON(statePath, {});
+  return { ...DEFAULT_STATE, ...loaded };
+}
+
+/**
+ * Deep merge two objects
+ * @param {object} target - Target object (defaults)
+ * @param {object} source - Source object (overrides)
+ * @returns {object} Merged object
+ */
+function deepMerge(target, source) {
+  const result = { ...target };
+  for (const key of Object.keys(source)) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMerge(target[key] || {}, source[key]);
+    } else {
+      result[key] = source[key];
+    }
+  }
+  return result;
+}
+
 module.exports = {
   getClaudePaths,
   getProjectPaths,
   directoryExists,
   readJSON,
   writeJSON,
-  copyDirectory
+  copyDirectory,
+  getConfigWithDefaults,
+  getStateWithDefaults,
+  DEFAULT_CONFIG,
+  DEFAULT_STATE
 };

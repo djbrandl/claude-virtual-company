@@ -307,6 +307,47 @@ After installation:
 2. **Configure Git**: Match your team's branching strategy
 3. **Manage Specialists**: Add domain-specific expertise as needed
 
+## Windows Compatibility
+
+The skill files (`.claude/skills/company*/SKILL.md`) contain bash commands that Claude executes. While the Node.js CLI (`cvc`) works on all platforms, the skill commands assume a Unix-like shell environment.
+
+### Recommended Environments
+
+For full compatibility on Windows, use one of these terminals:
+
+- **Git Bash** (included with Git for Windows) - Recommended
+- **WSL/WSL2** (Windows Subsystem for Linux)
+- **PowerShell with Unix tools** (via chocolatey or scoop)
+
+### Commands That May Need Alternatives
+
+Some bash commands used in skill files have Windows equivalents:
+
+| Bash Command | Purpose | Windows Alternative |
+|--------------|---------|---------------------|
+| `date -Iseconds` | ISO timestamp | Use `src/platform.js:getISOTimestamp()` |
+| `tr \| sed \| cut` | String slugify | Use `src/platform.js:slugify()` |
+| `cat file \|\| echo '{}'` | Safe JSON read | Use `src/platform.js:readJsonSafe()` |
+| `mkdir -p` | Create nested dirs | Works in PowerShell 5+ |
+| `find` / `ls` | File listing | Works in Git Bash |
+
+### Cross-Platform Utilities
+
+For programmatic use, the `src/platform.js` module provides cross-platform Node.js alternatives:
+
+```javascript
+const { getISOTimestamp, slugify, readJsonSafe } = require('./src/platform');
+
+// Instead of: date -Iseconds
+const timestamp = getISOTimestamp();
+
+// Instead of: echo "$str" | tr ... | sed ... | cut ...
+const branchName = slugify('My Feature Name', 40);
+
+// Instead of: cat file.json 2>/dev/null || echo '{}'
+const config = readJsonSafe('.company/config.json', {});
+```
+
 ## Troubleshooting
 
 ### Workflow Stuck
