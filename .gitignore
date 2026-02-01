@@ -28,5 +28,9 @@ coverage/
 
 # Runtime data
 .company/
+.planning/
 *.pyc
 __pycache__/
+
+# Claude Code local settings
+.claude/
