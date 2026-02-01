@@ -120,6 +120,16 @@ const DEFAULT_CONFIG = {
     name: 'Virtual Company',
     initialized: false
   },
+  models: {
+    'cto': 'opus',
+    'architect': 'opus',
+    'tech-lead': 'opus',
+    'developer': 'sonnet',
+    'senior-dev': 'sonnet',
+    'code-reviewer': 'sonnet',
+    'qa': 'opus',
+    'hiring-manager': 'haiku'
+  },
   quality: {
     test_coverage_minimum: 80,
     require_tests: {

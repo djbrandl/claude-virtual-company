@@ -4,6 +4,17 @@
     "name": "Virtual Engineering Co.",
     "initialized": null,
 
+    "models": {
+      "cto": "opus",
+      "architect": "opus",
+      "tech-lead": "opus",
+      "developer": "sonnet",
+      "senior-dev": "sonnet",
+      "code-reviewer": "sonnet",
+      "qa": "opus",
+      "hiring-manager": "haiku"
+    },
+
     "hiring": {
       "auto_hire": true,
       "require_ceo_approval_for_new_roles": false,

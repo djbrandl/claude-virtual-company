@@ -29,6 +29,24 @@ You are the executive coordinator for a virtual software development company. Th
 ## Current Configuration
 !`cat .company/config.json 2>/dev/null || echo '{"company":{"initialized":false}}'`
 
+## Model Preferences
+The `company.models` config section defines which model to use for each role.
+When spawning agents, always include the `model` parameter from config:
+- Read model from: `config.company.models["role-name"]`
+- Pass to Task: `model: "opus"` or `model: "sonnet"` or `model: "haiku"`
+
+Default model preferences:
+| Role | Model | Reason |
+|------|-------|--------|
+| cto | opus | Strategic decisions require deep reasoning |
+| architect | opus | System design needs comprehensive analysis |
+| tech-lead | opus | Task breakdown benefits from thorough planning |
+| developer | sonnet | Implementation is well-defined by prior phases |
+| senior-dev | sonnet | Similar to developer role |
+| code-reviewer | sonnet | Pattern matching and best practices |
+| qa | opus | Comprehensive verification needs attention to detail |
+| hiring-manager | haiku | Quick expertise assessment |
+
 ## Current Roster
 !`cat .company/roster.json 2>/dev/null | head -50 || echo '{"specialists":[]}'`
 
@@ -105,6 +123,7 @@ Before any work begins, evaluate what specialists are needed:
 Task(
   subagent_type: "company-hiring-manager",
   prompt: "Assess expertise needs for project: $ARGUMENTS. Analyze requirements and identify which specialists we need.",
+  model: config.company.models["hiring-manager"],  // Default: haiku
   run_in_background: false
 )
 ```
@@ -152,6 +171,7 @@ Spawn CTO to define technical direction:
 Task(
   subagent_type: "company-cto",
   prompt: "Define the technical architecture for: $ARGUMENTS",
+  model: config.company.models["cto"],  // Default: opus
   run_in_background: false
 )
 ```
@@ -174,6 +194,7 @@ Spawn Architect to create detailed design:
 Task(
   subagent_type: "company-architect",
   prompt: "Create system design based on CTO architecture for: $ARGUMENTS",
+  model: config.company.models["architect"],  // Default: opus
   run_in_background: false
 )
 ```
@@ -191,6 +212,7 @@ Spawn Tech Lead to break down into implementable features:
 Task(
   subagent_type: "company-tech-lead",
   prompt: "Break down the design into features and tasks for: $ARGUMENTS",
+  model: config.company.models["tech-lead"],  // Default: opus
   run_in_background: false
 )
 ```
@@ -219,9 +241,10 @@ TaskList()
 For independent tasks, spawn multiple developers:
 
 ```
-Task(subagent_type: "company-developer", prompt: "Implement: [task]", run_in_background: true)
-Task(subagent_type: "company-developer", prompt: "Implement: [task]", run_in_background: true)
+Task(subagent_type: "company-developer", prompt: "Implement: [task]", model: config.company.models["developer"], run_in_background: true)
+Task(subagent_type: "company-developer", prompt: "Implement: [task]", model: config.company.models["developer"], run_in_background: true)
 ```
+// Default model for developer: sonnet
 
 ### Sequential Execution (if dependencies)
 Execute tasks in dependency order.
@@ -242,6 +265,7 @@ Spawn code reviewer for quality check:
 Task(
   subagent_type: "company-code-reviewer",
   prompt: "Review all implementation changes for: $ARGUMENTS",
+  model: config.company.models["code-reviewer"],  // Default: sonnet
   run_in_background: false
 )
 ```
@@ -261,6 +285,7 @@ Spawn QA for comprehensive testing:
 Task(
   subagent_type: "company-qa",
   prompt: "Verify all implementations against acceptance criteria for: $ARGUMENTS",
+  model: config.company.models["qa"],  // Default: opus
   run_in_background: false
 )
 ```

@@ -158,6 +158,35 @@ Use `/company-quick "task"` for ad-hoc work without full ceremony.
 
 Configuration is stored in `.company/config.json`. Key settings:
 
+### Model Settings
+
+Configure which Claude model to use for each role. More capable models (opus) are used for strategic roles, while faster models (sonnet/haiku) handle implementation tasks.
+
+```json
+{
+  "company": {
+    "models": {
+      "cto": "opus",
+      "architect": "opus",
+      "tech-lead": "opus",
+      "developer": "sonnet",
+      "senior-dev": "sonnet",
+      "code-reviewer": "sonnet",
+      "qa": "opus",
+      "hiring-manager": "haiku"
+    }
+  }
+}
+```
+
+Available models: `opus`, `sonnet`, `haiku`
+
+Modify model for a role:
+
+```
+/company-settings company.models.developer haiku
+```
+
 ### Quality Settings
 
 ```json
