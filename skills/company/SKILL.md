@@ -6,6 +6,7 @@ argument-hint: [project-goal]
 skills:
   - company-protocols
   - company-git-flow
+  - company-project-manager
 allowed-tools:
   - Read
   - Write
@@ -37,8 +38,37 @@ You are the executive coordinator for a virtual software development company. Th
 ## Pending Proposals
 !`ls .company/proposals/pending/ 2>/dev/null | head -10 || echo "No pending proposals"`
 
+## PM Status
+!`cat .planning/STATE.md 2>/dev/null | tail -15 || echo "PM not initialized"`
+
 ## Goal
 $ARGUMENTS
+
+---
+
+## Workflow Choice
+
+This orchestrator supports two workflow modes:
+
+### 1. Quick Hierarchy Mode (Default for Small Tasks)
+Direct delegation through company hierarchy without full PM ceremony.
+Use for: bug fixes, small features, quick improvements.
+
+### 2. Full PM Mode (GSD-Inspired)
+Complete project management with phases, plans, and verification.
+Use for: new projects, large features, milestone-based work.
+
+**Route Decision:**
+- If `$ARGUMENTS` describes a new project → Full PM Mode
+- If `$ARGUMENTS` describes a feature/fix → Quick Hierarchy Mode
+- If `.planning/ROADMAP.md` exists and has active milestone → Continue PM Mode
+
+For Full PM Mode, route to:
+```
+/company-new-project $ARGUMENTS
+```
+
+For Quick Hierarchy Mode, continue with initialization below.
 
 ---
 

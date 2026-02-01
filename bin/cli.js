@@ -109,6 +109,8 @@ function init(options = {}) {
   log(`Installing to: ${targetBase}`, 'blue');
 
   // Create directories
+  const planningDir = path.join(CWD, '.planning');
+
   const dirs = [
     skillsDir,
     companyDir,
@@ -125,7 +127,11 @@ function init(options = {}) {
     path.join(companyDir, 'inboxes', 'tech-lead'),
     path.join(companyDir, 'inboxes', 'developer'),
     path.join(companyDir, 'inboxes', 'qa'),
-    path.join(companyDir, 'audit')
+    path.join(companyDir, 'audit'),
+    // PM directories
+    planningDir,
+    path.join(planningDir, 'research'),
+    path.join(planningDir, 'quick')
   ];
 
   dirs.forEach(dir => {
@@ -158,7 +164,7 @@ function init(options = {}) {
   const templatesDir = path.join(PACKAGE_ROOT, 'templates');
   log('\nInstalling configuration...', 'yellow');
 
-  const templates = ['config.json', 'roster.json', 'state.json', 'governance-matrix.json'];
+  const templates = ['config.json', 'roster.json', 'state.json', 'governance-matrix.json', 'pm-config.json'];
   templates.forEach(template => {
     const sourcePath = path.join(templatesDir, template);
     const targetPath = path.join(companyDir, template);
@@ -172,6 +178,31 @@ function init(options = {}) {
       }
     }
   });
+
+  // Copy PM templates to .planning
+  log('\nInstalling PM configuration...', 'yellow');
+  const pmTemplates = ['planning-state.md'];
+  pmTemplates.forEach(template => {
+    const sourcePath = path.join(templatesDir, template);
+    const targetPath = path.join(planningDir, template.replace('planning-', ''));
+
+    if (fs.existsSync(sourcePath)) {
+      if (fs.existsSync(targetPath) && !force) {
+        log(`  Skipped (exists): ${template}`, 'yellow');
+      } else {
+        fs.copyFileSync(sourcePath, targetPath);
+        log(`  Installed: ${template} → ${targetPath}`, 'green');
+      }
+    }
+  });
+
+  // Copy pm-config to .planning
+  const pmConfigSource = path.join(templatesDir, 'pm-config.json');
+  const pmConfigTarget = path.join(planningDir, 'config.json');
+  if (fs.existsSync(pmConfigSource) && (!fs.existsSync(pmConfigTarget) || force)) {
+    fs.copyFileSync(pmConfigSource, pmConfigTarget);
+    log(`  Installed: pm-config.json → .planning/config.json`, 'green');
+  }
 
   // Copy scripts
   if (!skipScripts) {
@@ -255,13 +286,25 @@ ${colors.bright}Next steps:${colors.reset}
   4. View/modify settings:
      ${colors.yellow}/company-settings${colors.reset}
 
-${colors.bright}Available commands:${colors.reset}
+${colors.bright}Core Commands:${colors.reset}
   /company [goal]          Start a new project
   /company-status          Check workflow state
   /company-settings        View/modify configuration
   /company-merge           Merge to main branch
   /company-roster          View specialists
   /company-hire [domain]   Request new specialist
+
+${colors.bright}Project Manager (GSD-Inspired):${colors.reset}
+  /company-new-project     Start new project with roadmap
+  /company-progress        Check progress, route to next action
+  /company-discuss [phase] Capture phase requirements
+  /company-plan-phase [N]  Create executable plans
+  /company-execute [N]     Execute plans with parallel waves
+  /company-verify [N]      Verify phase completion + UAT
+  /company-quick [task]    Quick mode for ad-hoc tasks
+  /company-pause           Create context handoff
+  /company-resume          Resume from previous session
+  /company-milestone       Complete and archive milestone
 
 ${colors.bright}Documentation:${colors.reset}
   ${colors.blue}https://github.com/YOUR_USERNAME/claude-virtual-company${colors.reset}

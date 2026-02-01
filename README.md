@@ -11,6 +11,8 @@ A Claude Code skill framework that simulates a hierarchical software development
 - **Git Flow Integration**: Built-in branching strategy and PR workflows
 - **Task Dependency Tracking**: Manage complex work with dependencies
 - **Fresh Context Windows**: Each role operates in isolation with explicit handoffs
+- **GSD-Inspired Project Management**: Phase-based workflow with discuss→plan→execute→verify cycles
+- **State Persistence**: Pause and resume work across sessions with full context
 
 ## Quick Start
 
@@ -97,7 +99,35 @@ Each phase transition requires:
 - Passing verification commands
 - No blocking issues
 
+### Project Manager Workflow (GSD-Inspired)
+
+For larger projects, use the full PM workflow:
+
+```
+/company-new-project "Build a task management app"
+```
+
+This initiates a structured cycle:
+
+1. **Discuss** - Capture implementation preferences and resolve gray areas
+2. **Plan** - Create atomic tasks (max 2-3 per plan) with XML format
+3. **Execute** - Parallel wave execution with atomic commits
+4. **Verify** - Automated checks + User Acceptance Testing
+
+Each phase produces artifacts in `.planning/phase-{N}/`:
+- `CONTEXT.md` - Decisions from discuss phase
+- `{N}-PLAN.md` - Executable task plans
+- `{N}-SUMMARY.md` - Completion records
+- `VERIFICATION.md` - Test results
+- `UAT.md` - User acceptance confirmation
+
+Use `/company-progress` to see current state and recommended next action.
+
+Use `/company-quick "task"` for ad-hoc work without full ceremony.
+
 ## Commands
+
+### Core Commands
 
 | Command | Description |
 |---------|-------------|
@@ -108,6 +138,21 @@ Each phase transition requires:
 | `/company-roster` | View specialists |
 | `/company-hire [domain]` | Request new specialist |
 | `/company-propose [type]` | Submit a proposal |
+
+### Project Manager Commands (GSD-Inspired)
+
+| Command | Description |
+|---------|-------------|
+| `/company-new-project` | Start new project with roadmap |
+| `/company-progress` | Check progress, route to next action |
+| `/company-discuss [N]` | Capture phase requirements |
+| `/company-plan-phase [N]` | Create executable plans |
+| `/company-execute [N]` | Execute plans with parallel waves |
+| `/company-verify [N]` | Verify phase completion + UAT |
+| `/company-quick [task]` | Quick mode for ad-hoc tasks |
+| `/company-pause` | Create context handoff |
+| `/company-resume` | Resume from previous session |
+| `/company-milestone` | Complete and archive milestone |
 
 ## Configuration
 
@@ -232,6 +277,19 @@ After installation:
 ├── proposals/               # Pending/approved/rejected
 ├── artifacts/               # Role outputs
 └── inboxes/                 # Role communication
+
+.planning/                   # Project Manager (GSD-inspired)
+├── config.json              # PM configuration
+├── PROJECT.md               # Vision and objectives
+├── REQUIREMENTS.md          # Scoped requirements
+├── ROADMAP.md               # Phase breakdown
+├── STATE.md                 # Session state and decisions
+├── phase-{N}/               # Phase artifacts
+│   ├── CONTEXT.md           # Phase decisions
+│   ├── {N}-PLAN.md          # Executable plans
+│   ├── {N}-SUMMARY.md       # Completion summaries
+│   └── VERIFICATION.md      # Verification results
+└── quick/                   # Ad-hoc task tracking
 ```
 
 ## Best Practices

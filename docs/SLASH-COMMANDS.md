@@ -268,6 +268,200 @@ npx claude-virtual-company init
 
 ---
 
+---
+
+## Project Manager Commands (GSD-Inspired)
+
+### `/company-init-pm`
+
+**Purpose**: Initialize the project manager directory structure.
+
+**Usage**:
+```
+/company-init-pm
+```
+
+**What it does**:
+- Creates `.planning/` directory structure
+- Initializes `config.json` and `STATE.md`
+- Prepares for project definition
+
+---
+
+### `/company-new-project`
+
+**Purpose**: Start a new project with vision capture, requirements, and roadmap.
+
+**Usage**:
+```
+/company-new-project "Build a task management app"
+```
+
+**What it does**:
+1. Captures project vision interactively
+2. Creates PROJECT.md with objectives
+3. Creates REQUIREMENTS.md with v1/v2 scope
+4. Runs domain research
+5. Creates ROADMAP.md with phases
+
+---
+
+### `/company-discuss [phase]`
+
+**Purpose**: Capture implementation preferences and resolve gray areas before planning.
+
+**Usage**:
+```
+/company-discuss phase-1
+```
+
+**What it does**:
+- Identifies decision points for the phase
+- Asks clarifying questions
+- Documents decisions in CONTEXT.md
+
+---
+
+### `/company-plan-phase [phase]`
+
+**Purpose**: Create detailed executable plans with atomic tasks.
+
+**Usage**:
+```
+/company-plan-phase phase-1
+```
+
+**What it does**:
+- Researches implementation approach
+- Defines success criteria (goal-backward)
+- Creates PLAN.md files with XML tasks
+- Verifies plan before execution
+
+---
+
+### `/company-execute [phase]`
+
+**Purpose**: Execute phase plans with parallel waves and atomic commits.
+
+**Usage**:
+```
+/company-execute phase-1
+```
+
+**What it does**:
+- Loads plans for the phase
+- Executes in parallel waves
+- Creates atomic commits per task
+- Tracks progress in SUMMARY.md
+
+---
+
+### `/company-verify [phase]`
+
+**Purpose**: Verify phase completion with automated checks and UAT.
+
+**Usage**:
+```
+/company-verify phase-1
+```
+
+**What it does**:
+- Runs automated verification (tests, lint, coverage)
+- Checks goal-backward criteria
+- Conducts user acceptance testing
+- Creates VERIFICATION.md and UAT.md
+
+---
+
+### `/company-progress`
+
+**Purpose**: Check project progress and get recommended next action.
+
+**Usage**:
+```
+/company-progress
+```
+
+**What it shows**:
+- Current milestone and phase
+- Phase completion status
+- Open tasks and blockers
+- Recommended next command
+
+---
+
+### `/company-pause`
+
+**Purpose**: Create context handoff for pausing work.
+
+**Usage**:
+```
+/company-pause
+```
+
+**What it does**:
+- Documents current position
+- Lists uncommitted changes
+- Creates resume instructions in STATE.md
+
+---
+
+### `/company-resume`
+
+**Purpose**: Resume work from previous session.
+
+**Usage**:
+```
+/company-resume
+```
+
+**What it does**:
+- Loads pause context
+- Confirms resumption point
+- Continues execution
+
+---
+
+### `/company-milestone`
+
+**Purpose**: Complete current milestone and prepare for next.
+
+**Usage**:
+```
+/company-milestone
+```
+
+**What it does**:
+- Verifies all phases complete
+- Creates milestone summary
+- Merges and tags release
+- Archives phase artifacts
+- Updates roadmap for next milestone
+
+---
+
+### `/company-quick [task]`
+
+**Purpose**: Quick mode for ad-hoc tasks without full ceremony.
+
+**Usage**:
+```
+/company-quick "Fix button alignment on login page"
+```
+
+**What it does**:
+- Skips research and plan verification
+- Maintains atomic commits
+- Logs in `.planning/quick/`
+
+**Good for**:
+- Bug fixes
+- Small features
+- Config changes
+- Documentation
+
+---
+
 ## Tips
 
 1. **Use `/company-status` frequently** to track progress
@@ -275,3 +469,6 @@ npx claude-virtual-company init
 3. **Adjust settings** before starting if needed
 4. **Check artifacts** to understand decisions made by roles
 5. **Use proposals** for any cross-role needs
+6. **Use `/company-progress`** to see recommended next action
+7. **Use `/company-pause`** before ending a session
+8. **Use `/company-quick`** for small ad-hoc tasks
