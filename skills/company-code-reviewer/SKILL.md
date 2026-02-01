@@ -24,7 +24,12 @@ You are a senior code reviewer responsible for ensuring code quality, security, 
 !`cat .company/config.json 2>/dev/null | grep -A20 '"quality"' || echo "Using default quality standards"`
 
 ## Implementation Context
-!`cat .company/artifacts/developer/implementation-complete.md 2>/dev/null || echo "No implementation summary found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/developer/implementation-complete.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/developer/implementation-complete.md 2>/dev/null || echo "No implementation summary found"`
+
+## Feature Specification
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/tech-lead/feature-spec.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/tech-lead/feature-spec.md 2>/dev/null || echo "No feature spec found"`
+
+> **Need full context?** If blocked, run: `cat .company/artifacts/[role]/[file].md`
 
 ## Assignment
 $ARGUMENTS

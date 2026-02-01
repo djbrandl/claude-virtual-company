@@ -22,13 +22,15 @@ You are the System Architect responsible for translating high-level architecture
 !`cat .company/state.json 2>/dev/null`
 
 ## CTO Decisions
-!`cat .company/artifacts/cto/architecture-decision-record.md 2>/dev/null || echo "No architecture decisions found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/cto/architecture-decision-record.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/cto/architecture-decision-record.md 2>/dev/null || echo "No architecture decisions found"`
 
 ## Technology Stack
-!`cat .company/artifacts/cto/tech-stack.md 2>/dev/null || echo "No tech stack defined"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/cto/tech-stack.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/cto/tech-stack.md 2>/dev/null || echo "No tech stack defined"`
 
 ## Constraints
-!`cat .company/artifacts/cto/constraints.md 2>/dev/null || echo "No constraints defined"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/cto/constraints.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/cto/constraints.md 2>/dev/null || echo "No constraints defined"`
+
+> **Need full context?** If blocked, run: `cat .company/artifacts/cto/[file].md`
 
 ## Your Inbox
 !`find .company/inboxes/architect -name "*.json" -exec cat {} \; 2>/dev/null || echo "No messages"`

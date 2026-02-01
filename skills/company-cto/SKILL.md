@@ -25,6 +25,11 @@ You are the CTO responsible for technical strategy, architecture decisions, and 
 ## Your Inbox
 !`find .company/inboxes/cto -name "*.json" -exec cat {} \; 2>/dev/null | head -50 || echo "No messages"`
 
+## Existing Project Context
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .planning/PROJECT.md 2>/dev/null | grep -v '<!-- ') || head -50 .planning/PROJECT.md 2>/dev/null || echo "No existing project context"`
+
+> **Need full context?** If blocked, run: `cat .planning/PROJECT.md`
+
 ## Assignment
 $ARGUMENTS
 

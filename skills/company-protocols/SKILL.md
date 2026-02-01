@@ -13,6 +13,109 @@ This skill defines shared standards that all roles must follow.
 
 ---
 
+## Tiered Context Structure
+
+All handoffs and key artifacts should use tier markers for progressive loading. This reduces context bloat while ensuring critical information is always available.
+
+### Tier Markers
+
+```markdown
+<!-- TIER:SUMMARY --> ... <!-- /TIER:SUMMARY -->   (Always loaded, ~50 words)
+<!-- TIER:DECISIONS --> ... <!-- /TIER:DECISIONS --> (Loaded for implementation)
+<!-- TIER:FULL --> ... <!-- /TIER:FULL -->          (Loaded only if blocked)
+```
+
+### What Goes in Each Tier
+
+| Tier | Content | When Loaded |
+|------|---------|-------------|
+| SUMMARY | TL;DR, one-line decisions | Always |
+| DECISIONS | Acceptance criteria, verification, key constraints | Default |
+| FULL | Rationale, alternatives, detailed context | On request |
+
+### Example Tiered Handoff
+
+```markdown
+# Handoff: Architect → Tech Lead
+
+<!-- TIER:SUMMARY -->
+## Summary
+REST API with JWT auth. 3 services: AuthService, UserService, SessionService.
+PostgreSQL for persistence. Follow existing service patterns in src/services/.
+<!-- /TIER:SUMMARY -->
+
+<!-- TIER:DECISIONS -->
+## Key Decisions
+- JWT over sessions: stateless scaling
+- Refresh tokens: 7-day expiry with rotation
+- bcrypt cost factor: 12
+
+## Acceptance Criteria
+- [ ] Services created following existing patterns
+- [ ] All endpoints documented in api-contracts.md
+- [ ] Unit tests with 80%+ coverage
+
+## Verification
+\`\`\`bash
+npm test -- --grep="Auth"
+\`\`\`
+<!-- /TIER:DECISIONS -->
+
+<!-- TIER:FULL -->
+## Alternatives Considered
+[Full rationale...]
+
+## Open Questions
+[Deferred items...]
+<!-- /TIER:FULL -->
+```
+
+---
+
+## Context Loading Utilities
+
+### Load by Tier (bash patterns for role skills)
+
+```bash
+# Summary only (fastest)
+sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:SUMMARY -->/p' FILE | grep -v '<!-- '
+
+# Summary + Decisions (default for implementation)
+sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' FILE | grep -v '<!-- '
+
+# Full document (when blocked)
+cat FILE
+```
+
+### Graceful Fallback
+
+If tier markers not present, fall back to head:
+
+```bash
+CONTENT=$(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' "$FILE" 2>/dev/null | grep -v '<!-- ')
+if [ -z "$CONTENT" ]; then
+  CONTENT=$(head -50 "$FILE" 2>/dev/null)
+fi
+echo "$CONTENT"
+```
+
+### Node.js Loading (via platform.js)
+
+```javascript
+const { readTier } = require('./src/platform');
+
+// Load summary only
+const summary = readTier('.company/artifacts/architect/handoff.md', 'summary');
+
+// Load summary + decisions (default)
+const decisions = readTier('.company/artifacts/architect/handoff.md', 'decisions');
+
+// Load full document
+const full = readTier('.company/artifacts/architect/handoff.md', 'full');
+```
+
+---
+
 ## Handoff Protocol
 
 Every role transition requires a formal handoff document.

@@ -13,6 +13,7 @@ A Claude Code skill framework that simulates a hierarchical software development
 - **Fresh Context Windows**: Each role operates in isolation with explicit handoffs
 - **GSD-Inspired Project Management**: Phase-based workflow with discuss→plan→execute→verify cycles
 - **State Persistence**: Pause and resume work across sessions with full context
+- **Automatic Context Management**: Tiered document loading, context decay, and archival to prevent bloat
 
 ## Quick Start
 
@@ -335,6 +336,85 @@ After installation:
 1. **Adjust Quality**: Set appropriate coverage and test requirements
 2. **Configure Git**: Match your team's branching strategy
 3. **Manage Specialists**: Add domain-specific expertise as needed
+
+## Context Management
+
+The framework includes automatic context management to keep Claude's context fresh and prevent bloat during long projects.
+
+### Tiered Document Loading
+
+Handoffs and artifacts use tier markers for progressive loading:
+
+```markdown
+<!-- TIER:SUMMARY -->
+TL;DR in ~50 words - always loaded
+<!-- /TIER:SUMMARY -->
+
+<!-- TIER:DECISIONS -->
+Acceptance criteria, verification commands, key constraints - loaded by default
+<!-- /TIER:DECISIONS -->
+
+<!-- TIER:FULL -->
+Full rationale, alternatives considered - loaded only when blocked
+<!-- /TIER:FULL -->
+```
+
+Each role skill automatically loads the appropriate tier (usually SUMMARY + DECISIONS) from upstream artifacts. If you need full context while working, run:
+
+```bash
+cat .company/artifacts/[role]/[file].md
+```
+
+### Automatic Context Decay
+
+- **Session Log Trimming**: When `STATE.md` exceeds 500 lines, old session entries are archived to `.planning/archive/sessions/` and only the 10 most recent entries are kept
+- **Milestone Archival**: When completing a milestone, all phase directories move to `.planning/archive/v{version}/`
+- **Quick Task Cleanup**: Quick tasks older than 7 days are automatically archived
+- **Proposal Archival**: Approved/rejected proposals older than 30 days are archived
+
+### Configuration
+
+Context management settings in `templates/pm-config.json`:
+
+```json
+{
+  "context_management": {
+    "session_log_max_entries": 25,
+    "summarize_after_entries": 20,
+    "archive_completed_phases": true,
+    "handoff_max_lines": 100,
+    "default_tier": "decisions",
+    "quick_task_retention_days": 7
+  }
+}
+```
+
+### Platform Utilities
+
+For programmatic context management, `src/platform.js` provides:
+
+```javascript
+const { readTier, trimSessionLog, archiveAndResetState } = require('./src/platform');
+
+// Read specific tier from a tiered document
+const decisions = readTier('.company/artifacts/architect/handoff.md', 'decisions');
+
+// Trim session log keeping only recent entries
+trimSessionLog('.planning/STATE.md', 10);
+
+// Archive STATE.md and create fresh one for new milestone
+archiveAndResetState('.planning/STATE.md', '.planning/archive/v1.0/');
+```
+
+### Writing Tiered Documents
+
+When creating handoffs or key artifacts, structure them with tiers:
+
+1. **SUMMARY tier**: One-liner decisions, tech choices, key constraints
+2. **DECISIONS tier**: Acceptance criteria, verification commands, must-know details
+3. **FULL tier**: Rationale, alternatives considered, detailed context
+
+This ensures downstream roles get exactly the context they need without loading historical rationale they don't.
 
 ## Windows Compatibility
 

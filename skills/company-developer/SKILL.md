@@ -41,13 +41,15 @@ You are a software developer responsible for implementing features, writing test
 !`find .company/inboxes/developer -name "*.json" -exec cat {} \; 2>/dev/null || echo "No messages"`
 
 ## Feature Specification
-!`cat .company/artifacts/tech-lead/feature-spec.md 2>/dev/null | head -100 || echo "No feature spec found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/tech-lead/feature-spec.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/tech-lead/feature-spec.md 2>/dev/null || echo "No feature spec found"`
 
 ## API Contracts
-!`cat .company/artifacts/architect/api-contracts.md 2>/dev/null | head -100 || echo "No API contracts found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/architect/api-contracts.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/architect/api-contracts.md 2>/dev/null || echo "No API contracts found"`
 
 ## Data Model
-!`cat .company/artifacts/architect/data-model.md 2>/dev/null | head -100 || echo "No data model found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/architect/data-model.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/architect/data-model.md 2>/dev/null || echo "No data model found"`
+
+> **Need full context?** If blocked, run: `cat .company/artifacts/[role]/[file].md`
 
 ## Your Tasks
 !`echo "Run TaskList() to see assigned tasks"`

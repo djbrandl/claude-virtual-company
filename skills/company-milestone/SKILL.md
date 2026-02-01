@@ -134,17 +134,51 @@ git merge --no-ff develop -m "Release v{version}"
 ### Step 5: Archive Phase Artifacts
 
 ```bash
+# Get version from PROJECT.md or default
+VERSION=$(grep -oP 'version:\s*\K[0-9.]+' .planning/PROJECT.md 2>/dev/null || echo "1.0")
+
 # Create archive directory
-mkdir -p .planning/archive/v{version}
+mkdir -p ".planning/archive/v$VERSION"
 
 # Move phase directories
-mv .planning/phase-* .planning/archive/v{version}/
+for phase_dir in .planning/phase-*; do
+  [ -d "$phase_dir" ] || continue
+  phase_name=$(basename "$phase_dir")
+  mv "$phase_dir" ".planning/archive/v$VERSION/"
+  echo "Archived $phase_name"
+done
 
 # Move research
-mv .planning/research .planning/archive/v{version}/
+if [ -d ".planning/research" ]; then
+  mv .planning/research ".planning/archive/v$VERSION/"
+fi
 
-# Keep PROJECT.md and REQUIREMENTS.md (will update for next milestone)
+# Archive old quick tasks (> 7 days)
+if [ -d ".planning/quick" ]; then
+  mkdir -p .planning/archive/quick
+  find .planning/quick -maxdepth 1 -type d -mtime +7 -exec mv {} .planning/archive/quick/ \; 2>/dev/null
+fi
+
+# Archive old proposals (> 30 days)
+if [ -d ".company/proposals/approved" ]; then
+  mkdir -p .company/proposals/archive
+  find .company/proposals/approved -name "*.json" -mtime +30 -exec mv {} .company/proposals/archive/ \; 2>/dev/null
+fi
+if [ -d ".company/proposals/rejected" ]; then
+  find .company/proposals/rejected -name "*.json" -mtime +30 -exec mv {} .company/proposals/archive/ \; 2>/dev/null
+fi
+
+# Summarize STATE.md for fresh start (using Node.js for cross-platform)
+node -e "require('./src/platform').archiveAndResetState('.planning/STATE.md', '.planning/archive/v$VERSION/')"
+
+echo "Milestone v$VERSION archived successfully"
 ```
+
+This cleanup:
+1. Archives all phase directories with their artifacts
+2. Moves old quick tasks to archive (keeping recent 7 days)
+3. Archives old proposals (>30 days)
+4. Resets STATE.md to minimal fresh state for next milestone
 
 ### Step 6: Update ROADMAP.md
 

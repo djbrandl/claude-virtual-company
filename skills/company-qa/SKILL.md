@@ -30,10 +30,15 @@ You are a QA Engineer responsible for verifying implementations, running compreh
 !`find .company/inboxes/qa -name "*.json" -exec cat {} \; 2>/dev/null || echo "No messages"`
 
 ## Implementation Summary
-!`cat .company/artifacts/developer/implementation-complete.md 2>/dev/null || echo "No implementation summary found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/developer/implementation-complete.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/developer/implementation-complete.md 2>/dev/null || echo "No implementation summary found"`
 
 ## Feature Specification
-!`cat .company/artifacts/tech-lead/feature-spec.md 2>/dev/null | head -100 || echo "No feature spec found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/tech-lead/feature-spec.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/tech-lead/feature-spec.md 2>/dev/null || echo "No feature spec found"`
+
+## API Contracts
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/architect/api-contracts.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/architect/api-contracts.md 2>/dev/null || echo "No API contracts found"`
+
+> **Need full context?** If blocked, run: `cat .company/artifacts/[role]/[file].md`
 
 ## Quality Configuration
 !`cat .company/config.json 2>/dev/null | grep -A20 '"quality"' || echo "Using default quality config"`

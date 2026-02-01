@@ -43,6 +43,14 @@
       "persist_decisions": true,
       "persist_blockers": true,
       "session_logging": true
+    },
+    "context_management": {
+      "session_log_max_entries": 25,
+      "summarize_after_entries": 20,
+      "archive_completed_phases": true,
+      "handoff_max_lines": 100,
+      "default_tier": "decisions",
+      "quick_task_retention_days": 7
     }
   }
 }

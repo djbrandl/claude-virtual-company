@@ -244,6 +244,37 @@ EOF
 
 ---
 
+## Context Maintenance
+
+After completing a phase, check if context decay is needed:
+
+```bash
+# Check STATE.md line count
+if [ -f ".planning/STATE.md" ]; then
+  LINE_COUNT=$(wc -l < .planning/STATE.md)
+  MAX_LINES=500
+
+  if [ "$LINE_COUNT" -gt "$MAX_LINES" ]; then
+    echo "STATE.md has $LINE_COUNT lines, archiving old session entries..."
+
+    # Archive old session log entries (keep last 10)
+    mkdir -p .planning/archive/sessions
+
+    # Use Node.js for reliable cross-platform archival
+    node -e "require('./src/platform').summarizeSessionLog('.planning/STATE.md', 10, '.planning/archive/sessions')"
+
+    echo "Old session entries archived to .planning/archive/sessions/"
+  fi
+fi
+```
+
+This keeps STATE.md lean by:
+1. Archiving session log entries older than the 10 most recent
+2. Preserving all other sections (Current Phase, Active Decisions, Blockers)
+3. Creating timestamped archives for audit trail
+
+---
+
 ## Output
 
 ```markdown

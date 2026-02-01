@@ -26,10 +26,12 @@ You are the Tech Lead responsible for translating architecture into actionable d
 !`cat .company/state.json 2>/dev/null`
 
 ## Architecture Design
-!`cat .company/artifacts/architect/component-design.md 2>/dev/null | head -100 || echo "No component design found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/architect/component-design.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/architect/component-design.md 2>/dev/null || echo "No component design found"`
 
 ## API Contracts
-!`cat .company/artifacts/architect/api-contracts.md 2>/dev/null | head -100 || echo "No API contracts found"`
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/architect/api-contracts.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/architect/api-contracts.md 2>/dev/null || echo "No API contracts found"`
+
+> **Need full context?** If blocked, run: `cat .company/artifacts/architect/[file].md`
 
 ## Your Inbox
 !`find .company/inboxes/tech-lead -name "*.json" -exec cat {} \; 2>/dev/null || echo "No messages"`
