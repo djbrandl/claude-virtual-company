@@ -155,6 +155,18 @@ The `.gemini/settings.json` file configures the MCP task server:
 }
 ```
 
+## Limitations on Gemini CLI
+
+### Model Selection Not Supported
+
+The per-role model selection feature (`.company/config.json` → `company.models`) only works on Claude Code. On Gemini CLI:
+
+- Model configuration in `config.json` is ignored
+- All roles use your globally configured Gemini model
+- Model references are automatically stripped during skill transpilation
+
+To change the model used by Gemini CLI, configure it in your Gemini CLI settings, not in CVC.
+
 ## Workflow Differences from Claude Code
 
 ### Sequential Execution

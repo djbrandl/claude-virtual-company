@@ -209,7 +209,7 @@ class SkillToGemini {
     // Replace $ARGUMENTS with Gemini template
     transformed = transformed.replace(/\$ARGUMENTS/g, '{{args}}');
 
-    // Transform Task() calls to instructions
+    // Transform Task() calls to instructions (and strip model references)
     transformed = this.transformTaskCalls(transformed);
 
     // Transform TaskCreate/TaskUpdate/etc
@@ -218,8 +218,54 @@ class SkillToGemini {
     // Transform AskUserQuestion
     transformed = this.transformUserQuestions(transformed);
 
+    // Strip Claude-specific model references (opus/sonnet/haiku)
+    transformed = this.stripModelReferences(transformed);
+
     // Add section marker for the actual instructions
     transformed = `## Role Instructions\n\n${transformed}`;
+
+    return transformed;
+  }
+
+  /**
+   * Strip Claude-specific model references from content
+   * Model selection is not supported on Gemini CLI
+   * @param {string} body - Body content
+   * @returns {string} Content with model references removed
+   */
+  stripModelReferences(body) {
+    let transformed = body;
+
+    // Remove model parameter from Task() style calls
+    // e.g., model: config.company.models["cto"],  // Default: opus
+    transformed = transformed.replace(
+      /,?\s*model:\s*config\.company\.models\["[^"]+"\],?\s*\/\/[^\n]*/g,
+      ''
+    );
+
+    // Remove model parameter without comment
+    transformed = transformed.replace(
+      /,?\s*model:\s*config\.company\.models\["[^"]+"\],?/g,
+      ''
+    );
+
+    // Remove standalone model references like: model: "opus"
+    transformed = transformed.replace(
+      /,?\s*model:\s*["'](opus|sonnet|haiku)["'],?/g,
+      ''
+    );
+
+    // Remove model preference sections/tables (keep header, remove Claude-specific content)
+    transformed = transformed.replace(
+      /## Model Preferences[\s\S]*?(?=\n## |\n---|\n\*\*|$)/g,
+      ''
+    );
+
+    // Remove inline model comments like // Default: opus or // Default model for developer: sonnet
+    transformed = transformed.replace(
+      /\s*\/\/\s*Default(?:\s+model)?(?:\s+for\s+\w+)?:\s*(opus|sonnet|haiku)/g,
+      ''
+    );
 
     return transformed;
   }

@@ -402,8 +402,11 @@ GEMINI.md                    # Project context for Gemini (root level)
 | Parallel execution | Native (background tasks) | Sequential only |
 | Task management | Native tools | MCP server |
 | Tool restrictions | Enforced (`allowed-tools`) | Trust-based guidance |
+| Per-role model selection | ✅ Supported | ❌ Not supported |
 | Hooks | Native support | Not supported |
 | Dynamic context | Backtick syntax | Pre-loaded context files |
+
+**Note:** The model configuration in `.company/config.json` (opus/sonnet/haiku per role) only applies to Claude Code. Gemini CLI uses your globally configured model for all roles.
 
 ### MCP Task Server
 

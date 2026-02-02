@@ -16,6 +16,7 @@ This document compares the features and capabilities of Claude Virtual Company (
 | Subagent isolation | ✅ Native (`context: fork`) | ⚠️ Simulated | Sequential with checkpoints |
 | Parallel execution | ✅ Native (background tasks) | ❌ Sequential | Parallel on Claude only |
 | Tool restrictions | ✅ Native (`allowed-tools`) | ⚠️ Trust-based | Guidance only on Gemini |
+| Per-role model selection | ✅ Full | ❌ Not supported | See limitation below |
 | **Developer Experience** ||||
 | Hooks | ✅ Native | ❌ None | No equivalent on Gemini |
 | Dynamic context loading | ✅ Backtick syntax | ⚠️ Pre-loaded | Manual file reads on Gemini |
@@ -27,6 +28,34 @@ This document compares the features and capabilities of Claude Virtual Company (
 | Dual provider | ✅ Default | ✅ Default | Both installed by default |
 
 ## Detailed Comparisons
+
+### Model Selection
+
+**Claude Code:**
+```json
+// In .company/config.json
+{
+  "company": {
+    "models": {
+      "cto": "opus",
+      "architect": "opus",
+      "developer": "sonnet",
+      "qa": "opus"
+    }
+  }
+}
+```
+- Per-role model selection (opus/sonnet/haiku)
+- Strategic roles use more capable models
+- Implementation roles use faster models
+
+**Gemini CLI:**
+- ❌ **Not supported** - Model selection is stripped during transpilation
+- Gemini CLI uses whatever model is configured globally
+- All roles run on the same model
+- Configure your preferred model in Gemini CLI settings
+
+This is a known limitation. The `.company/config.json` model settings only affect Claude Code.
 
 ### Context Isolation
 
