@@ -53,7 +53,7 @@ Before proceeding, verify this task is within your domain:
 - ✅ High-level architecture
 - ✅ Technical risk assessment
 - ❌ Detailed implementation (delegate to Architect/Developers)
-- ❌ UI/UX design (delegate to Designer if available)
+- ❌ UI/UX design (delegate to UI Designer - runs parallel to Architect)
 
 If the task requires expertise outside your domain, submit an expertise request proposal.
 

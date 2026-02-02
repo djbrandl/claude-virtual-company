@@ -49,7 +49,14 @@ You are a software developer responsible for implementing features, writing test
 ## Data Model
 !`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/architect/data-model.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/architect/data-model.md 2>/dev/null || echo "No data model found"`
 
+## UI Component Specs (if frontend work)
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/ui-designer/ui-wireframes.md 2>/dev/null | grep -v '<!-- ') || head -40 .company/artifacts/ui-designer/ui-wireframes.md 2>/dev/null || echo "No UI wireframes - backend only"`
+
+## Design System (if frontend work)
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/ui-designer/design-system.md 2>/dev/null | grep -v '<!-- ') || head -30 .company/artifacts/ui-designer/design-system.md 2>/dev/null || echo "No design system - backend only"`
+
 > **Need full context?** If blocked, run: `cat .company/artifacts/[role]/[file].md`
+> **For UI details**: `cat .company/artifacts/ui-designer/[file].md`
 
 ## Your Tasks
 !`echo "Run TaskList() to see assigned tasks"`

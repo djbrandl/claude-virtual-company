@@ -38,7 +38,17 @@ You are a QA Engineer responsible for verifying implementations, running compreh
 ## API Contracts
 !`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/architect/api-contracts.md 2>/dev/null | grep -v '<!-- ') || head -50 .company/artifacts/architect/api-contracts.md 2>/dev/null || echo "No API contracts found"`
 
+## UI Design Specs (if frontend project)
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/ui-designer/ui-wireframes.md 2>/dev/null | grep -v '<!-- ') || head -30 .company/artifacts/ui-designer/ui-wireframes.md 2>/dev/null || echo "No UI specs - backend only"`
+
+## Design System (if frontend project)
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/ui-designer/design-system.md 2>/dev/null | grep -v '<!-- ') || head -20 .company/artifacts/ui-designer/design-system.md 2>/dev/null || echo "No design system - backend only"`
+
+## Accessibility Requirements (if frontend project)
+!`(sed -n '/<!-- TIER:SUMMARY -->/,/<!-- \/TIER:DECISIONS -->/p' .company/artifacts/ui-designer/accessibility-ux.md 2>/dev/null | grep -v '<!-- ') || head -20 .company/artifacts/ui-designer/accessibility-ux.md 2>/dev/null || echo "No accessibility spec - backend only"`
+
 > **Need full context?** If blocked, run: `cat .company/artifacts/[role]/[file].md`
+> **For UI details**: `cat .company/artifacts/ui-designer/[file].md`
 
 ## Quality Configuration
 !`cat .company/config.json 2>/dev/null | grep -A20 '"quality"' || echo "Using default quality config"`
@@ -154,10 +164,19 @@ Write comprehensive QA report.
 - [ ] Database operations succeed
 - [ ] External integrations work
 
-### UI Testing (if applicable)
-- [ ] UI renders correctly
-- [ ] Responsive on all breakpoints
-- [ ] Accessibility requirements met
+### UI Testing (if applicable - verify against UI Designer specs)
+- [ ] UI renders correctly (compare to wireframes in ui-wireframes.md)
+- [ ] Components match specifications (props, variants, states)
+- [ ] Design system compliance (colors, typography, spacing per design-system.md)
+- [ ] Responsive on all breakpoints (per responsive-spec.md)
+- [ ] Mobile layout correct (< 640px)
+- [ ] Tablet layout correct (640-1024px)
+- [ ] Desktop layout correct (> 1024px)
+- [ ] Accessibility requirements met (per accessibility-ux.md)
+- [ ] WCAG 2.1 AA compliance
+- [ ] Keyboard navigation works
+- [ ] Screen reader compatible
+- [ ] Color contrast meets requirements
 - [ ] Forms work correctly
 - [ ] Error messages display
 - [ ] Loading states show

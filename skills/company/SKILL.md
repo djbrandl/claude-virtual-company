@@ -40,6 +40,7 @@ Default model preferences:
 |------|-------|--------|
 | cto | opus | Strategic decisions require deep reasoning |
 | architect | opus | System design needs comprehensive analysis |
+| ui-designer | opus | Design decisions require creative reasoning |
 | tech-lead | opus | Task breakdown benefits from thorough planning |
 | developer | sonnet | Implementation is well-defined by prior phases |
 | senior-dev | sonnet | Similar to developer role |
@@ -247,7 +248,7 @@ If `.company/config.json` shows `initialized: false` or doesn't exist:
 
 ```bash
 # Ensure directory structure exists
-mkdir -p .company/{proposals/{pending,approved,rejected},artifacts/{cto,architect,tech-lead,senior-dev,developer,qa},inboxes/{cto,architect,tech-lead,senior-dev,developer,qa},audit}
+mkdir -p .company/{proposals/{pending,approved,rejected},artifacts/{cto,architect,ui-designer,tech-lead,senior-dev,developer,qa},inboxes/{cto,architect,ui-designer,tech-lead,senior-dev,developer,qa},audit}
 
 # Update state
 cat > .company/state.json << 'EOF'
@@ -346,11 +347,14 @@ If validation fails, provide feedback and re-run CTO.
 
 ---
 
-## Phase 4: System Design (Architect)
+## Phase 4: System Design (Architect + UI Designer in Parallel)
 
-Spawn Architect to create detailed design, respecting discovery constraints:
+Spawn Architect and UI Designer **in parallel** to reduce critical path. Both receive CTO's tech stack decisions and work simultaneously.
+
+### Parallel Execution
 
 ```
+// Spawn BOTH agents in parallel (in same message)
 Task(
   subagent_type: "company-architect",
   prompt: "Create system design based on CTO architecture for: $ARGUMENTS
@@ -360,18 +364,46 @@ $(cat .company/artifacts/discovery/context.md)
 
 Respect the scope level from discovery - don't over-design for minimal scope tasks.",
   model: config.company.models["architect"],  // Default: opus
-  run_in_background: false
+  run_in_background: true  // Background for parallel execution
+)
+
+Task(
+  subagent_type: "company-ui-designer",
+  prompt: "Create UI/UX design specifications for: $ARGUMENTS
+
+## Discovery Context
+$(cat .company/artifacts/discovery/context.md)
+
+## CTO Tech Stack
+$(cat .company/artifacts/cto/tech-stack.md)
+
+Design for the selected frontend framework. Respect scope level - minimal scope means fewer screens and simpler components.",
+  model: config.company.models["ui-designer"],  // Default: opus
+  run_in_background: true  // Background for parallel execution
 )
 ```
 
+### Wait for Both to Complete
+
+Check both agents have completed before proceeding:
+```bash
+# Verify both design phases complete
+ls .company/artifacts/architect/handoff-planning.md
+ls .company/artifacts/ui-designer/handoff-ui-design.md
+```
+
 ### Quality Gate: Design Review
-Verify design artifacts exist and are complete.
+Verify BOTH design artifact sets exist:
+1. Architect: component-design.md, api-contracts.md, data-model.md
+2. UI Designer: ui-wireframes.md, design-system.md, responsive-spec.md
+
+**Note**: If project has no frontend (pure API/CLI), UI Designer phase can be skipped. Check discovery context for task type.
 
 ---
 
 ## Phase 5: Feature Planning (Tech Lead)
 
-Spawn Tech Lead to break down into implementable features:
+Spawn Tech Lead to break down into implementable features. Tech Lead receives BOTH backend design (Architect) and frontend design (UI Designer) to create a unified feature specification.
 
 ```
 Task(
@@ -381,7 +413,19 @@ Task(
 ## Discovery Context
 $(cat .company/artifacts/discovery/context.md)
 
-Size tasks appropriately for the scope level. Minimal scope = fewer, focused tasks.",
+## Backend Design (from Architect)
+$(cat .company/artifacts/architect/handoff-planning.md)
+
+## Frontend Design (from UI Designer)
+$(cat .company/artifacts/ui-designer/handoff-ui-design.md 2>/dev/null || echo 'No UI design - backend only project')
+
+Size tasks appropriately for the scope level. Minimal scope = fewer, focused tasks.
+
+When creating feature specs:
+- Reference BOTH architect patterns AND UI component specs
+- Include UI component requirements in frontend tasks
+- Note responsive/accessibility requirements from UI Designer
+- Prioritize shared UI components before feature-specific ones",
   model: config.company.models["tech-lead"],  // Default: opus
   run_in_background: false
 )
