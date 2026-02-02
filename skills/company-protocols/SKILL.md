@@ -411,6 +411,44 @@ EOF
 - Proper error handling
 - No dead code or debug statements
 
+### Architecture & Design Patterns
+
+**Prefer established patterns over ad-hoc solutions.** Well-known patterns produce consistent, maintainable code that other developers can understand quickly.
+
+#### Common Patterns to Consider
+
+| Pattern | When to Use | Example |
+|---------|-------------|---------|
+| **MVC/MVVM** | UI applications with clear view/logic separation | React + hooks, Vue components |
+| **Repository** | Data access abstraction | `UserRepository.findById()` |
+| **Service Layer** | Business logic encapsulation | `AuthService.validateCredentials()` |
+| **Factory** | Complex object creation | `createDatabaseConnection(config)` |
+| **Strategy** | Interchangeable algorithms | Payment processors, auth providers |
+| **Observer/Pub-Sub** | Event-driven communication | Webhooks, real-time updates |
+| **Middleware** | Cross-cutting concerns | Auth, logging, error handling |
+| **DTO/ViewModel** | Data transfer between layers | API responses, form data |
+
+#### Anti-Patterns to Avoid
+
+- **God objects** - Classes/files doing too much (split by responsibility)
+- **Spaghetti code** - Tangled dependencies (use clear layers)
+- **Magic numbers/strings** - Unexplained values (use named constants)
+- **Copy-paste code** - Duplicated logic (extract to shared functions)
+- **Deep nesting** - Excessive if/loop depth (extract functions, use early returns)
+
+#### Pattern Selection by Role
+
+- **Architect**: Selects architectural patterns (MVC, microservices, etc.) and documents in `component-design.md`
+- **Tech Lead**: References patterns in feature specs, ensures consistency across features
+- **Developer**: Implements following specified patterns, proposes patterns for new scenarios
+
+#### When Starting a New Component
+
+1. Check if existing codebase has established patterns
+2. If new pattern needed, document rationale in handoff
+3. Keep files focused - one class/component per file when practical
+4. Separate concerns: data access, business logic, presentation
+
 ### Testing Requirements
 - Unit tests for new functions
 - Integration tests for API endpoints

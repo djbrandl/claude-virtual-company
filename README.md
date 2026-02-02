@@ -8,6 +8,7 @@ A Claude Code skill framework that simulates a hierarchical software development
 - **Dynamic Specialist Hiring**: Automatically creates specialists based on project needs
 - **Proposal-Based Governance**: Cross-role actions require approval
 - **Quality Gates**: Mandatory testing, code review, and acceptance criteria
+- **Design Pattern Enforcement**: Architect selects patterns, roles follow consistently
 - **Git Flow Integration**: Built-in branching strategy and PR workflows
 - **Task Dependency Tracking**: Manage complex work with dependencies
 - **Fresh Context Windows**: Each role operates in isolation with explicit handoffs
@@ -204,6 +205,37 @@ Modify model for a role:
   }
 }
 ```
+
+### Design Patterns
+
+The framework encourages consistent, maintainable code through design pattern enforcement:
+
+**Role Responsibilities**:
+- **Architect** selects patterns and documents in `component-design.md`
+- **Tech Lead** references patterns in feature specs
+- **Developer** implements following specified patterns
+
+**Common Patterns Used**:
+
+| Pattern | Purpose |
+|---------|---------|
+| Repository | Abstract data access |
+| Service Layer | Encapsulate business logic |
+| Controller + DTO | Clean HTTP handling |
+| Middleware | Cross-cutting concerns |
+| Factory | Complex object creation |
+
+**File Organization** (typical):
+```
+src/
+├── controllers/    # HTTP handlers
+├── services/       # Business logic
+├── repositories/   # Data access
+├── models/         # Domain entities
+└── middleware/     # Auth, logging, etc.
+```
+
+This prevents "god files" and spaghetti code by enforcing separation of concerns.
 
 ### Git Flow Settings
 

@@ -96,6 +96,35 @@ For each component, specify:
 - Storage requirements
 - Caching strategy
 
+### Step 5: Select Design Patterns
+
+Choose appropriate patterns for maintainable, consistent code:
+
+**Architectural Patterns** (system-wide):
+- Layered architecture (presentation → business → data)
+- MVC/MVVM for UI applications
+- Microservices vs monolith
+- Event-driven for async workflows
+
+**Component Patterns** (per service/module):
+- Repository pattern for data access
+- Service layer for business logic
+- Factory for complex object creation
+- Strategy for interchangeable behaviors
+
+**Document your choices** in component-design.md with rationale. Example:
+
+```markdown
+## Design Patterns
+
+| Layer | Pattern | Rationale |
+|-------|---------|-----------|
+| API | Controller + DTO | Clean request/response separation |
+| Business | Service Layer | Encapsulate logic, enable testing |
+| Data | Repository | Abstract storage, swap implementations |
+| Auth | Strategy | Support multiple auth providers |
+```
+
 ---
 
 ## Deliverables
@@ -140,6 +169,22 @@ graph TD
     User --> DB
     Session --> Cache
 \`\`\`
+
+## Design Patterns
+
+| Layer | Pattern | Rationale |
+|-------|---------|-----------|
+| API | Controller + DTO | Clean separation of HTTP handling and business logic |
+| Business | Service Layer | Encapsulate business rules, enable unit testing |
+| Data | Repository | Abstract data access, enable storage swapping |
+| Cross-cutting | Middleware | Auth, logging, error handling in one place |
+
+**File Organization**:
+- `src/controllers/` - HTTP request handlers
+- `src/services/` - Business logic
+- `src/repositories/` - Data access
+- `src/models/` - Domain entities
+- `src/middleware/` - Cross-cutting concerns
 
 ## Components
 

@@ -111,19 +111,25 @@ TaskUpdate({
 2. Review API contracts (if applicable)
 3. Check data model (if applicable)
 4. Identify acceptance criteria
+5. **Check Pattern Reference** in feature spec - note which patterns to follow
 
-### Step 3: Explore Codebase
+### Step 3: Explore Codebase & Patterns
 
 ```bash
-# Find existing patterns
-grep -r "pattern" src/ --include="*.ts" | head -20
+# Check established file structure
+ls -la src/services/ src/controllers/ src/repositories/ src/models/ 2>/dev/null
+
+# Find existing implementations to follow
+ls src/services/*.ts 2>/dev/null | head -5
+
+# Look at an existing service for pattern reference
+cat src/services/[existing-service].ts 2>/dev/null | head -50
 
 # Check for similar implementations
-ls src/services/ src/components/ src/models/ 2>/dev/null
-
-# Understand project structure
-find src -type f -name "*.ts" | head -30
+grep -r "class.*Service" src/ --include="*.ts" | head -10
 ```
+
+**Before writing new code**, find an existing example that follows the same pattern and use it as a template.
 
 ### Step 4: Create Feature Branch
 
@@ -136,9 +142,31 @@ git checkout -b feature/[task-id]-[description]
 
 Follow these principles:
 - **Minimal changes** - Only what's needed
-- **Follow patterns** - Match existing code style
+- **Follow patterns** - Match existing code style and architecture
 - **Small commits** - Logical, atomic commits
 - **Self-documenting** - Clear naming
+
+**Pattern Adherence Checklist**:
+
+| If Creating... | Follow Pattern | Example |
+|----------------|---------------|---------|
+| Data access | Repository | `UserRepository.findById()` |
+| Business logic | Service Layer | `AuthService.validateCredentials()` |
+| HTTP handlers | Controller + DTO | `AuthController.login(LoginDto)` |
+| Shared behavior | Middleware | `authMiddleware(req, res, next)` |
+| Complex creation | Factory | `createDatabaseConnection(config)` |
+
+**File Placement** (check architect's component-design.md):
+- Services → `src/services/[name].service.ts`
+- Repositories → `src/repositories/[name].repository.ts`
+- Controllers → `src/controllers/[name].controller.ts`
+- Models → `src/models/[name].model.ts`
+
+**Avoid**:
+- God files (>300 lines usually means split needed)
+- Business logic in controllers (move to services)
+- Direct DB calls outside repositories
+- Duplicating existing utilities
 
 ### Step 6: Write Tests
 

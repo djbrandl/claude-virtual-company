@@ -76,6 +76,9 @@ Understand:
 - API contracts to implement
 - Data models to create
 - Integration requirements
+- **Design patterns** specified by architect (Repository, Service Layer, etc.)
+
+Check `component-design.md` for the patterns table - reference these in feature specs so developers know which patterns to follow.
 
 ### Step 2: Identify Features
 
@@ -157,6 +160,12 @@ graph LR
 - Use bcrypt for password hashing
 - JWT expiry: 1 hour
 - Refresh token expiry: 7 days
+
+**Pattern Reference** (from architect):
+- `AuthService` - Service Layer pattern
+- `UserRepository` - Repository pattern
+- `AuthController` - Controller + DTO pattern
+- Follow file structure: `src/services/`, `src/repositories/`, `src/controllers/`
 
 **Test Requirements**:
 - Unit tests for auth service
