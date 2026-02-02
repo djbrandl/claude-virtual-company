@@ -1,17 +1,22 @@
 {
   "name": "claude-virtual-company",
-  "version": "1.0.0",
-  "description": "A Claude Code skill framework that simulates a virtual software development company with hierarchical roles, governance, and quality gates",
+  "version": "1.1.0",
+  "description": "A skill framework for AI coding assistants (Claude Code & Gemini CLI) that simulates a virtual software development company with hierarchical roles, governance, and quality gates",
   "main": "src/install.js",
   "bin": {
     "claude-virtual-company": "./bin/cli.js",
-    "cvc": "./bin/cli.js"
+    "cvc": "./bin/cli.js",
+    "cvc-task-server": "./mcp/task-server/index.js"
   },
   "scripts": {
     "postinstall": "node src/install.js --auto",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "mcp-server": "node mcp/task-server/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0"
@@ -19,6 +24,8 @@
   "keywords": [
     "claude",
     "claude-code",
+    "gemini",
+    "gemini-cli",
     "ai",
     "agent",
     "skills",
@@ -26,7 +33,9 @@
     "virtual-company",
     "orchestration",
     "code-review",
-    "git-flow"
+    "git-flow",
+    "mcp",
+    "model-context-protocol"
   ],
   "author": "",
   "license": "MIT",
@@ -47,6 +56,7 @@
     "skills/",
     "templates/",
     "scripts/",
-    "docs/"
+    "docs/",
+    "mcp/"
   ]
 }

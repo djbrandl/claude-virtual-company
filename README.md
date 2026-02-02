@@ -1,41 +1,61 @@
 # Claude Virtual Company
 
-A Claude Code skill framework that simulates a hierarchical software development company. You act as the CEO, delegating work through a structured engineering organization with proper governance, quality gates, and dynamic specialist hiring.
+A skill framework for AI coding assistants (Claude Code & Gemini CLI) that simulates a hierarchical software development company. You act as the CEO, delegating work through a structured engineering organization with proper governance, quality gates, and dynamic specialist hiring.
+
+## Supported Providers
+
+| Provider | Status | Task Management | Parallel Execution |
+|----------|--------|-----------------|-------------------|
+| **Claude Code** | ✅ Full Support | Native | ✅ Native |
+| **Gemini CLI** | ✅ Full Support | MCP Server | Sequential |
+
+Both providers share the same `.company/` state directory, so you can switch between them seamlessly.
 
 ## Features
 
+- **Multi-Provider Support**: Works with both Claude Code and Gemini CLI
 - **Hierarchical Role System**: CTO, Architect, Tech Lead, Senior Dev, Developer, QA
 - **Dynamic Specialist Hiring**: Automatically creates specialists based on project needs
 - **Proposal-Based Governance**: Cross-role actions require approval
 - **Quality Gates**: Mandatory testing, code review, and acceptance criteria
 - **Design Pattern Enforcement**: Architect selects patterns, roles follow consistently
 - **Git Flow Integration**: Built-in branching strategy and PR workflows
-- **Task Dependency Tracking**: Manage complex work with dependencies
+- **Task Dependency Tracking**: Manage complex work with dependencies (MCP server for Gemini)
 - **Fresh Context Windows**: Each role operates in isolation with explicit handoffs
 - **GSD-Inspired Project Management**: Phase-based workflow with discuss→plan→execute→verify cycles
 - **State Persistence**: Pause and resume work across sessions with full context
 - **Automatic Context Management**: Tiered document loading, context decay, and archival to prevent bloat
+- **Shared State**: Switch between providers seamlessly with persistent workflow state
 
 ## Quick Start
 
 ### Installation
 
 ```bash
+# Install for both Claude Code and Gemini CLI (default)
 npx claude-virtual-company init
-```
 
-Or install globally:
+# Install for Claude Code only
+npx claude-virtual-company init --provider claude
 
-```bash
+# Install for Gemini CLI only
+npx claude-virtual-company init --provider gemini
+
+# Install globally
 npx claude-virtual-company init --global
 ```
 
 ### Start a Project
 
-1. Open Claude Code in your project directory
-2. Start a new project:
-
+**Claude Code:**
+```bash
+claude
+/company "Build a user authentication system with email/password login"
 ```
+
+**Gemini CLI:**
+```bash
+gemini
 /company "Build a user authentication system with email/password login"
 ```
 
@@ -324,6 +344,7 @@ Issues are escalated based on severity:
 After installation:
 
 ```
+# Claude Code skills
 .claude/
 └── skills/
     ├── company/              # Main orchestrator
@@ -332,10 +353,27 @@ After installation:
     ├── company-[role]/       # Role skills
     └── company-specialists/  # Dynamic specialists
 
+# Gemini CLI configuration
+.gemini/
+├── context/                 # Role context files (transpiled from SKILL.md)
+│   ├── company.md
+│   ├── company-cto.md
+│   └── ...
+├── commands/company/        # TOML command definitions
+│   ├── company.toml
+│   └── ...
+└── settings.json            # MCP server configuration
+
+GEMINI.md                    # Project context for Gemini (root level)
+
+# Shared state (used by both providers)
 .company/
 ├── config.json              # Configuration
 ├── roster.json              # Specialists roster
 ├── state.json               # Workflow state
+├── tasks/                   # Task storage (MCP server)
+│   ├── index.json
+│   └── task-*.json
 ├── proposals/               # Pending/approved/rejected
 ├── artifacts/               # Role outputs
 └── inboxes/                 # Role communication
@@ -353,6 +391,44 @@ After installation:
 │   └── VERIFICATION.md      # Verification results
 └── quick/                   # Ad-hoc task tracking
 ```
+
+## Provider Differences
+
+### Claude Code vs Gemini CLI
+
+| Feature | Claude Code | Gemini CLI |
+|---------|-------------|------------|
+| Context isolation | Native (`context: fork`) | Sequential with file handoffs |
+| Parallel execution | Native (background tasks) | Sequential only |
+| Task management | Native tools | MCP server |
+| Tool restrictions | Enforced (`allowed-tools`) | Trust-based guidance |
+| Hooks | Native support | Not supported |
+| Dynamic context | Backtick syntax | Pre-loaded context files |
+
+### MCP Task Server
+
+For Gemini CLI, task management is provided via an MCP (Model Context Protocol) server that exposes these tools:
+
+- `cvc_task_create` - Create a new task
+- `cvc_task_list` - List all tasks
+- `cvc_task_get` - Get task details
+- `cvc_task_update` - Update task status
+
+Tasks are stored in `.company/tasks/` and work with both providers.
+
+### Switching Providers
+
+Both providers share the same `.company/` state directory. You can:
+
+1. Start work in Claude Code
+2. Continue in Gemini CLI
+3. Switch back anytime
+
+The workflow state, artifacts, and tasks persist across provider switches.
+
+For detailed information, see:
+- [docs/PROVIDER-COMPARISON.md](docs/PROVIDER-COMPARISON.md) - Feature comparison matrix
+- [docs/GEMINI-SETUP.md](docs/GEMINI-SETUP.md) - Gemini CLI setup guide
 
 ## Best Practices
 
@@ -536,6 +612,27 @@ const config = readJsonSafe('.company/config.json', {});
 2. Manually hire with `/company-hire [domain]`
 3. Verify skill files exist in `.claude/skills/company-specialists/`
 
+### Gemini CLI: MCP Server Not Working
+
+1. Verify the server is configured in `.gemini/settings.json`
+2. Check the path to the server is correct
+3. Ensure Node.js 18+ is available
+4. Test manually: `node node_modules/claude-virtual-company/mcp/task-server/index.js`
+
+### Gemini CLI: Commands Not Found
+
+1. Verify `.gemini/commands/company/` contains TOML files
+2. Check TOML syntax is valid
+3. Restart Gemini CLI after installation
+
+### Check Installation Status
+
+```bash
+cvc status
+```
+
+This shows the installation status for both Claude Code and Gemini CLI.
+
 ## Contributing
 
 Contributions are welcome! Please:
@@ -551,6 +648,9 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-Built for [Claude Code](https://claude.ai/code) by Anthropic.
+Built for [Claude Code](https://claude.ai/code) by Anthropic and [Gemini CLI](https://github.com/google-gemini/gemini-cli) by Google.
 
-Uses the [Agent Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) framework.
+Uses:
+- [Claude Code Agent Skills](https://docs.anthropic.com/en/docs/claude-code/skills) framework
+- [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) for cross-provider task management
+- [Gemini CLI TOML Commands](https://geminicli.com/docs/cli/gemini-md/) for Gemini integration

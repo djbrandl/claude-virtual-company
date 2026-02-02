@@ -1,0 +1,28 @@
+{
+  "name": "@claude-virtual-company/task-server",
+  "version": "1.0.0",
+  "description": "MCP Task Server for Claude Virtual Company - Provides task management tools for Gemini CLI",
+  "main": "index.js",
+  "type": "commonjs",
+  "bin": {
+    "cvc-task-server": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "mcp",
+    "task-management",
+    "gemini-cli",
+    "claude-virtual-company"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
