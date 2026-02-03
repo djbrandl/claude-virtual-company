@@ -84,16 +84,7 @@ AskUserQuestion({
 
 ### Step 4: Create Specialist
 
-Invoke the hiring manager to create the specialist:
-
-```
-Task(
-  subagent_type: "company-hiring-manager",
-  prompt: "Create specialist for domain: $ARGUMENTS"
-)
-```
-
-Or create directly:
+Create the specialist directly:
 
 ```bash
 # Create skill directory

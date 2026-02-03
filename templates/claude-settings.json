@@ -2,43 +2,42 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": {
-          "tool": "TaskUpdate"
-        },
-        "command": "python .company/scripts/validate_task_update.py",
-        "description": "Validate role has permission to update this task"
+        "matcher": "TaskUpdate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .company/scripts/validate_task_update.py"
+          }
+        ]
       },
       {
-        "matcher": {
-          "tool": "TaskCreate"
-        },
-        "command": "python .company/scripts/validate_task_create.py",
-        "description": "Validate task creation follows governance rules"
+        "matcher": "TaskCreate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .company/scripts/validate_task_create.py"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": {
-          "tool": "TaskUpdate"
-        },
-        "command": "python .company/scripts/sync_notify.py",
-        "description": "Notify affected roles of task updates"
+        "matcher": "TaskUpdate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .company/scripts/sync_notify.py"
+          }
+        ]
       },
       {
-        "matcher": {
-          "tool": "Write",
-          "path": "src/**/*.ts"
-        },
-        "command": "npm run lint --silent 2>/dev/null || true",
-        "description": "Auto-lint TypeScript files"
-      },
-      {
-        "matcher": {
-          "tool": "Write",
-          "path": "src/**/*.tsx"
-        },
-        "command": "npm run lint --silent 2>/dev/null || true",
-        "description": "Auto-lint TSX files"
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run lint --silent 2>/dev/null || true"
+          }
+        ]
       }
     ]
   }

@@ -358,16 +358,32 @@ function installClaude(adapter, options) {
 
       const hooksConfig = JSON.parse(fs.readFileSync(hooksTemplate, 'utf8'));
 
-      // Merge hooks
+      // Merge hooks (new format: matcher + hooks array)
       existingSettings.hooks = existingSettings.hooks || {};
       Object.keys(hooksConfig.hooks || {}).forEach(hookType => {
         existingSettings.hooks[hookType] = existingSettings.hooks[hookType] || [];
         hooksConfig.hooks[hookType].forEach(newHook => {
-          const exists = existingSettings.hooks[hookType].some(
-            h => h.command === newHook.command
+          // Check if a hook with this matcher already exists
+          const existingHookIndex = existingSettings.hooks[hookType].findIndex(
+            h => h.matcher === newHook.matcher
           );
-          if (!exists) {
+
+          if (existingHookIndex === -1) {
+            // Matcher doesn't exist, add the whole hook entry
             existingSettings.hooks[hookType].push(newHook);
+          } else {
+            // Matcher exists, merge the hooks arrays
+            const existingHook = existingSettings.hooks[hookType][existingHookIndex];
+            existingHook.hooks = existingHook.hooks || [];
+
+            newHook.hooks?.forEach(hookItem => {
+              const hookExists = existingHook.hooks.some(
+                h => h.command === hookItem.command
+              );
+              if (!hookExists) {
+                existingHook.hooks.push(hookItem);
+              }
+            });
           }
         });
       });
