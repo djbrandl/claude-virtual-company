@@ -56,8 +56,8 @@ const phaseOrder: WorkflowPhase[] = [
 
 export function WorkflowStatus() {
   const { workflow } = useDashboardStore();
-  const currentPhase = workflow.phase;
-  const config = phaseConfig[currentPhase];
+  const currentPhase = workflow.phase || 'idle';
+  const config = phaseConfig[currentPhase] || phaseConfig['idle'];
 
   const currentIndex = phaseOrder.indexOf(currentPhase);
   const progress =

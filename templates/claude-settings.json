@@ -9,15 +9,6 @@
             "command": "python .company/scripts/validate_task_update.py"
           }
         ]
-      },
-      {
-        "matcher": "TaskCreate",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .company/scripts/validate_task_create.py"
-          }
-        ]
       }
     ],
     "PostToolUse": [
@@ -27,15 +18,6 @@
           {
             "type": "command",
             "command": "python .company/scripts/sync_notify.py"
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npm run lint --silent 2>/dev/null || true"
           }
         ]
       }

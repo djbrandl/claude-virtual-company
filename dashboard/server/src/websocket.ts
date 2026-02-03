@@ -60,6 +60,14 @@ export class DashboardWebSocketServer {
     });
   }
 
+  broadcastInitialState(state: unknown): void {
+    this.broadcast({
+      type: 'initial:state',
+      payload: state,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
   getClientCount(): number {
     return this.clients.size;
   }

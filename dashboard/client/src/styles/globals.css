@@ -89,3 +89,81 @@
     scrollbar-width: thin;
   }
 }
+
+/* Markdown Prose Enhancements */
+.prose {
+  @apply text-gray-300;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  @apply text-gray-100 font-semibold;
+}
+
+.prose h1 {
+  @apply text-2xl mb-4 mt-6;
+}
+
+.prose h2 {
+  @apply text-xl mb-3 mt-5 border-b border-gray-700 pb-2;
+}
+
+.prose h3 {
+  @apply text-lg mb-2 mt-4;
+}
+
+.prose p {
+  @apply mb-3;
+}
+
+.prose ul, .prose ol {
+  @apply mb-3 pl-6;
+}
+
+.prose li {
+  @apply mb-1;
+}
+
+.prose code {
+  @apply bg-gray-900 px-1.5 py-0.5 rounded text-sm text-blue-400 font-mono;
+}
+
+.prose pre {
+  @apply bg-gray-900 p-3 rounded-lg overflow-x-auto mb-3;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-gray-300;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-blue-500 pl-4 italic text-gray-400 my-3;
+}
+
+.prose a {
+  @apply text-blue-400 hover:text-blue-300 underline;
+}
+
+.prose table {
+  @apply w-full border-collapse mb-3;
+}
+
+.prose th {
+  @apply bg-gray-700 p-2 text-left font-semibold border border-gray-600;
+}
+
+.prose td {
+  @apply p-2 border border-gray-700;
+}
+
+.prose hr {
+  @apply border-gray-700 my-4;
+}
+
+/* Mermaid Diagram Styling */
+.mermaid-diagram {
+  @apply flex justify-center items-center bg-gray-900/50 rounded-lg p-4 my-4;
+}
+
+.mermaid-diagram svg {
+  @apply max-w-full h-auto;
+}

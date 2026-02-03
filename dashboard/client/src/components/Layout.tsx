@@ -1,6 +1,7 @@
 import React from 'react';
 import { Wifi, WifiOff, Settings, RefreshCw } from 'lucide-react';
 import { useDashboardStore } from '../store/dashboardStore';
+import { ProjectSelector } from './ProjectSelector';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,6 +29,9 @@ export function Layout({ children, onReconnect }: LayoutProps) {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Project Selector */}
+              <ProjectSelector />
+
               {/* Connection Status */}
               <div className="flex items-center gap-2">
                 {connected ? (

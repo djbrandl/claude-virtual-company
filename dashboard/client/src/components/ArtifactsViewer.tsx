@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import { useDashboardStore, Artifact } from '../store/dashboardStore';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { MermaidDiagram } from './MermaidDiagram';
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -83,9 +85,30 @@ function ArtifactCard({
       </button>
 
       {isExpanded && artifact.content && (
-        <div className="mt-3 p-3 bg-gray-800 rounded text-sm overflow-auto max-h-64">
+        <div className="mt-3 p-3 bg-gray-800 rounded text-sm overflow-auto max-h-96">
           <div className="prose prose-sm prose-invert max-w-none">
-            <ReactMarkdown>{artifact.content}</ReactMarkdown>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || '');
+                  const language = match ? match[1] : '';
+                  const code = String(children).replace(/\n$/, '');
+
+                  if (!inline && language === 'mermaid') {
+                    return <MermaidDiagram chart={code} />;
+                  }
+
+                  return (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            >
+              {artifact.content}
+            </ReactMarkdown>
           </div>
         </div>
       )}

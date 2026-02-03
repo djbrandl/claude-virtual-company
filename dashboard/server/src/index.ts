@@ -1,6 +1,7 @@
 import express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as os from 'os';
 import { FileWatcher } from './watcher.js';
 import { DashboardWebSocketServer } from './websocket.js';
 import type { ServerConfig, WSMessage } from './types.js';
@@ -69,7 +70,7 @@ async function main() {
   const wsServer = new DashboardWebSocketServer(config.wsPort);
 
   // Initialize file watcher
-  const watcher = new FileWatcher(config.projectPath);
+  let watcher = new FileWatcher(config.projectPath);
 
   // Forward watcher events to WebSocket clients
   watcher.on('event', (event: { type: string; payload: unknown }) => {
@@ -121,6 +122,115 @@ async function main() {
       projectPath: config.projectPath,
       wsPort: config.wsPort,
     });
+  });
+
+  // Get recent projects (scan for .company directories)
+  app.get('/api/projects', (req, res) => {
+    try {
+      const recentProjects: { path: string; name: string; lastModified: number }[] = [];
+
+      // Check common project locations
+      const searchPaths = [
+        process.cwd(),
+        path.dirname(process.cwd()),
+        path.join(os.homedir(), 'Projects'),
+        path.join(os.homedir(), 'projects'),
+        path.join(os.homedir(), 'Development'),
+        path.join(os.homedir(), 'dev'),
+      ];
+
+      for (const searchPath of searchPaths) {
+        if (!fs.existsSync(searchPath)) continue;
+
+        try {
+          const entries = fs.readdirSync(searchPath, { withFileTypes: true });
+          for (const entry of entries) {
+            if (!entry.isDirectory()) continue;
+
+            const projectPath = path.join(searchPath, entry.name);
+            const companyPath = path.join(projectPath, '.company');
+
+            if (fs.existsSync(companyPath)) {
+              const stats = fs.statSync(companyPath);
+              recentProjects.push({
+                path: projectPath,
+                name: entry.name,
+                lastModified: stats.mtimeMs,
+              });
+            }
+          }
+        } catch (err) {
+          // Skip directories we can't read
+          console.warn(`Could not read directory ${searchPath}:`, err);
+        }
+      }
+
+      // Sort by last modified, most recent first
+      recentProjects.sort((a, b) => b.lastModified - a.lastModified);
+
+      res.json(recentProjects.slice(0, 20)); // Return top 20
+    } catch (error) {
+      console.error('Error in /api/projects:', error);
+      res.status(500).json({ error: 'Failed to scan for projects' });
+    }
+  });
+
+  // Switch project
+  app.post('/api/project', express.json(), (req, res) => {
+    try {
+      const { projectPath: newPath } = req.body;
+
+      if (!newPath || typeof newPath !== 'string') {
+        return res.status(400).json({ error: 'Invalid project path' });
+      }
+
+      // Normalize path for cross-platform compatibility
+      const normalizedPath = path.resolve(newPath);
+
+      if (!fs.existsSync(normalizedPath)) {
+        return res.status(404).json({
+          error: 'Project path does not exist',
+          path: normalizedPath,
+          originalPath: newPath
+        });
+      }
+
+      const companyPath = path.join(normalizedPath, '.company');
+      if (!fs.existsSync(companyPath)) {
+        return res.status(400).json({
+          error: 'Not a CVC project (no .company directory)',
+          path: normalizedPath,
+          companyPath: companyPath
+        });
+      }
+
+      // Update config
+      config.projectPath = normalizedPath;
+
+      // Restart watcher with new path
+      watcher.stop();
+      watcher = new FileWatcher(normalizedPath);
+
+      watcher.on('event', (event: { type: string; payload: unknown }) => {
+        const message: WSMessage = {
+          type: event.type as WSMessage['type'],
+          payload: event.payload,
+          timestamp: new Date().toISOString(),
+        };
+        wsServer.broadcast(message);
+      });
+
+      watcher.start();
+
+      // Send initial state to all connected clients
+      const initialState = watcher.loadInitialState();
+      wsServer.broadcastInitialState(initialState);
+
+      res.json({ success: true, projectPath: normalizedPath });
+    } catch (error) {
+      console.error('Error switching project:', error);
+      res.status(500).json({ error: 'Failed to switch project', details: String(error) });
+    }
   });
 
   // SPA fallback (for client-side routing)
