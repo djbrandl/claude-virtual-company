@@ -155,6 +155,7 @@ Use `/company-quick "task"` for ad-hoc work without full ceremony.
 |---------|-------------|
 | `/company [goal]` | Start a new project |
 | `/company-status` | Check workflow state |
+| `/company-reply [message]` | Route feedback/questions through the framework |
 | `/company-settings [path] [value]` | View/modify configuration |
 | `/company-merge [branch]` | Merge to main with validation |
 | `/company-roster` | View specialists |
@@ -435,12 +436,29 @@ For detailed information, see:
 
 ## Best Practices
 
+### Staying in the Framework
+
+When you need to respond to agent output (report bugs, ask questions, give approvals), use `/company-reply` instead of responding directly. This keeps your communication routed through the proper channels:
+
+```
+/company-reply "The login button doesn't work on mobile"
+/company-reply "Why did we choose PostgreSQL over MongoDB?"
+/company-reply "Looks good, proceed with implementation"
+```
+
+The command automatically:
+- Classifies your message (bug, question, approval, feature request, blocker)
+- Routes to the appropriate role (Developer, Architect, QA, etc.)
+- Maintains context from state files and artifacts
+- Creates an audit trail of interactions
+
 ### For Best Results
 
 1. **Clear Goals**: Provide specific, well-defined project goals
 2. **Let It Work**: Allow the workflow to progress through phases
 3. **Review Escalations**: Respond to CEO-level decisions promptly
 4. **Check Status**: Use `/company-status` to monitor progress
+5. **Use /company-reply**: Keep feedback within the framework
 
 ### Customization
 
