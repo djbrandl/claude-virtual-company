@@ -3,9 +3,25 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const readline = require('readline');
 
 const args = process.argv.slice(2);
 const command = args[0];
+
+// Helper for interactive prompts
+function prompt(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise(resolve => {
+    rl.question(question, answer => {
+      rl.close();
+      resolve(answer.trim().toLowerCase());
+    });
+  });
+}
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const CWD = process.cwd();
@@ -66,6 +82,7 @@ ${colors.bright}OTHER OPTIONS${colors.reset}
   --force, -f         Overwrite existing files
   --no-hooks          Skip hook installation (Claude only)
   --no-scripts        Skip Python script installation
+  --no-claude-mem     Skip claude-mem installation prompt
   --help, -h          Show this help message
   --version, -v       Show version
 
@@ -136,7 +153,7 @@ function checkGeminiDirectory() {
   };
 }
 
-function init(options = {}) {
+async function init(options = {}) {
   showBanner();
 
   const isGlobal = options.global || args.includes('--global') || args.includes('-g');
@@ -284,6 +301,49 @@ function init(options = {}) {
 
   // Success message
   showSuccessMessage(adapters, providerFlag);
+
+  // Prompt for claude-mem installation (Claude Code only)
+  if (adapters.some(a => a.name === 'claude') && !args.includes('--no-claude-mem')) {
+    await promptClaudeMemInstall();
+  }
+}
+
+async function promptClaudeMemInstall() {
+  console.log(`
+${colors.cyan}═══════════════════════════════════════════════════════════════${colors.reset}
+${colors.bright}Optional: Enhanced Context Memory${colors.reset}
+
+Claude-mem is a plugin that provides persistent memory across sessions.
+It automatically captures observations during coding/testing and allows
+the PM role to search historical context.
+
+${colors.yellow}Benefits:${colors.reset}
+  - Debugging feedback persists across sessions
+  - PM can search "what issues did we have with X?"
+  - Testing observations flow into handoffs automatically
+
+${colors.yellow}Note:${colors.reset} claude-mem is a separate project (AGPL-3.0 license).
+Learn more: ${colors.blue}https://github.com/thedotmack/claude-mem${colors.reset}
+${colors.cyan}═══════════════════════════════════════════════════════════════${colors.reset}
+`);
+
+  const answer = await prompt(`${colors.green}Install claude-mem? (y/N): ${colors.reset}`);
+
+  if (answer === 'y' || answer === 'yes') {
+    console.log(`
+${colors.yellow}To install claude-mem, run these commands in Claude Code:${colors.reset}
+
+  ${colors.cyan}claude${colors.reset}
+  ${colors.cyan}/install-plugin thedotmack/claude-mem${colors.reset}
+
+${colors.bright}After installation:${colors.reset}
+  - Restart Claude Code to activate
+  - PM commands will automatically use claude-mem when available
+  - View memory dashboard at ${colors.blue}http://localhost:37777${colors.reset}
+`);
+  } else {
+    log('\nSkipped claude-mem installation. You can install it later anytime.', 'yellow');
+  }
 }
 
 function installForProvider(adapter, options) {
@@ -732,34 +792,36 @@ function uninstall() {
 }
 
 // Main command handler
-switch (command) {
-  case 'init':
-  case 'install':
-    init();
-    break;
-  case 'status':
-    showStatus();
-    break;
-  case 'uninstall':
-  case 'remove':
-    uninstall();
-    break;
-  case 'upgrade':
-  case 'update':
-    init({ force: true });
-    break;
-  case '--version':
-  case '-v':
-    showVersion();
-    break;
-  case '--help':
-  case '-h':
-  case 'help':
-  case undefined:
-    showHelp();
-    break;
-  default:
-    log(`Unknown command: ${command}`, 'red');
-    log('Run "cvc --help" for usage information.', 'yellow');
-    process.exit(1);
-}
+(async () => {
+  switch (command) {
+    case 'init':
+    case 'install':
+      await init();
+      break;
+    case 'status':
+      showStatus();
+      break;
+    case 'uninstall':
+    case 'remove':
+      uninstall();
+      break;
+    case 'upgrade':
+    case 'update':
+      await init({ force: true });
+      break;
+    case '--version':
+    case '-v':
+      showVersion();
+      break;
+    case '--help':
+    case '-h':
+    case 'help':
+    case undefined:
+      showHelp();
+      break;
+    default:
+      log(`Unknown command: ${command}`, 'red');
+      log('Run "cvc --help" for usage information.', 'yellow');
+      process.exit(1);
+  }
+})();

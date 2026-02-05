@@ -571,6 +571,70 @@ When creating handoffs or key artifacts, structure them with tiers:
 
 This ensures downstream roles get exactly the context they need without loading historical rationale they don't.
 
+## Enhanced Context Memory (Optional)
+
+For projects with extended testing/debugging cycles, the framework supports [claude-mem](https://github.com/thedotmack/claude-mem) for persistent cross-session memory.
+
+### What claude-mem Provides
+
+| Feature | Benefit |
+|---------|---------|
+| **Automatic capture** | All tool observations saved automatically |
+| **Semantic search** | Query "what issues did we have with X?" |
+| **Cross-session memory** | Testing feedback persists across sessions |
+| **Pattern detection** | Identify recurring issues |
+
+### Why Use It
+
+The framework's handoff system works well for *planned* context transitions between roles. However, *emergent* context during testing and debugging often falls through the cracks:
+
+- Bug reports you mention while testing
+- UI feedback like "these elements should align"
+- Patterns you notice but don't formally document
+
+Claude-mem captures these observations automatically and makes them searchable.
+
+### Installation
+
+During `npx claude-virtual-company init`, you'll be prompted to install claude-mem. You can also install it manually:
+
+```bash
+# In Claude Code
+claude
+/install-plugin thedotmack/claude-mem
+```
+
+Or skip the prompt during installation:
+```bash
+npx claude-virtual-company init --no-claude-mem
+```
+
+### How the Framework Uses It
+
+When claude-mem is installed, these commands are enhanced:
+
+| Command | Enhancement |
+|---------|-------------|
+| `/company-progress` | Searches for recent issues, testing feedback |
+| `/company-resume` | Recovers context not in formal handoffs |
+| `/company-reply` | Checks for similar past issues, detects patterns |
+
+**Graceful Fallback**: All commands work fully without claude-mem. It's purely an enhancement for projects where testing feedback gets lost.
+
+### Claude-Mem MCP Tools
+
+The framework uses these MCP tools when available:
+
+- `search` - Semantic search across observations (~50-100 tokens)
+- `timeline` - Chronological context around results
+- `get_observations` - Full details for specific observation IDs
+
+This 3-layer retrieval pattern aligns with the framework's tiered document loading, providing ~10x token savings.
+
+### Licensing Note
+
+Claude-mem is a separate project licensed under AGPL-3.0. The framework uses it as an optional external plugin - no claude-mem code is bundled or modified. See [claude-mem repository](https://github.com/thedotmack/claude-mem) for full license details.
+
 ## Windows Compatibility
 
 The skill files (`.claude/skills/company*/SKILL.md`) contain bash commands that Claude executes. While the Node.js CLI (`cvc`) works on all platforms, the skill commands assume a Unix-like shell environment.
