@@ -337,9 +337,13 @@ ${colors.yellow}To install claude-mem, run these commands in Claude Code:${color
   ${colors.cyan}/install-plugin thedotmack/claude-mem${colors.reset}
 
 ${colors.bright}After installation:${colors.reset}
-  - Restart Claude Code to activate
+  - Restart Claude Code to activate the plugin
+  - The worker service starts automatically with Claude Code
   - PM commands will automatically use claude-mem when available
-  - View memory dashboard at ${colors.blue}http://localhost:37777${colors.reset}
+
+${colors.bright}Dashboard (optional):${colors.reset}
+  While Claude Code is running: ${colors.blue}http://localhost:37777${colors.reset}
+  (Dashboard is only available when Claude Code session is active)
 `);
   } else {
     log('\nSkipped claude-mem installation. You can install it later anytime.', 'yellow');

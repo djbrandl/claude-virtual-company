@@ -604,6 +604,10 @@ claude
 /install-plugin thedotmack/claude-mem
 ```
 
+After installation, restart Claude Code. The worker service starts automatically.
+
+**Dashboard** (optional): While Claude Code is running, visit `http://localhost:37777` to view the memory dashboard. The dashboard is only available during active Claude Code sessions.
+
 Or skip the prompt during installation:
 ```bash
 npx claude-virtual-company init --no-claude-mem
