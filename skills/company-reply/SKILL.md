@@ -214,6 +214,15 @@ Always respond to the CEO with:
 
 ---
 [Role's response or investigation results]
+
+## ▶ What's Next?
+
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Check progress | `/company-progress` | See what's recommended next |
+| More feedback | `/company-reply "..."` | Have additional feedback |
+| View status | `/company-status` | See detailed workflow state |
+| Continue work | `{phase-appropriate command}` | Based on current phase |
 ```
 
 ---

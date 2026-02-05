@@ -251,12 +251,12 @@ AskUserQuestion({
 ## Archived To
 `.planning/archive/v{version}/`
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**Start Milestone v{next}** — Define next version scope
-
-`/company-new-milestone`
-
-Or continue with:
-`/company-progress`
+| Option | Command | When to use |
+|--------|---------|-------------|
+| New milestone | `/company-new-project "v{next} goals"` | Start next version |
+| Check status | `/company-progress` | Review what was accomplished |
+| Merge to main | `/company-merge` | Deploy/release this version |
+| Take a break | Session complete! | Celebrate the milestone |
 ```

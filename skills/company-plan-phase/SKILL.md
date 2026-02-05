@@ -259,9 +259,12 @@ EOF
 - [x] Scope within constraints
 - [x] Dependencies mapped
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**Execute Phase $ARGUMENTS** — Run plans with parallel waves
-
-`/company-execute $ARGUMENTS`
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Execute phase | `/company-execute $ARGUMENTS` | Ready to implement the plans |
+| Revise discussion | `/company-discuss $ARGUMENTS` | Need to change decisions |
+| Report concern | `/company-reply "..."` | Have questions about the plan |
+| Check progress | `/company-progress` | See overall project status |
 ```

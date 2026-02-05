@@ -205,11 +205,14 @@ Phase 0: Project Initialized
 |-----------|--------|---------|
 | {now} | new-project | Created PROJECT.md, REQUIREMENTS.md, ROADMAP.md |
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**Phase 1: {name}** — {one-line summary}
-
-`/company-discuss phase-1`
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Start Phase 1 | `/company-discuss 1` | Begin discussing first phase |
+| Review project | `/company-progress` | See roadmap and status |
+| Ask questions | `/company-reply "..."` | Have questions about the plan |
+| Pause work | `/company-pause` | Need to stop for now |
 ```
 
 ---

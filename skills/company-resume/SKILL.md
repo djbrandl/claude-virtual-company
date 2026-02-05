@@ -203,9 +203,14 @@ EOF
 - Tasks in progress: {count}
 - Git: {status}
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**{Action}** — {description}
+**Recommended:** `{command}` — {description based on pause point}
 
-`{command}`
+| Other Options | Command | When to use |
+|---------------|---------|-------------|
+| Check full status | `/company-progress` | Need more context first |
+| Report issue | `/company-reply "..."` | Found something while reviewing |
+| Quick task first | `/company-quick "..."` | Handle urgent item before continuing |
+| Pause again | `/company-pause` | Changed my mind, stopping |
 ```

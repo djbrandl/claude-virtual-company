@@ -304,9 +304,12 @@ This keeps STATE.md lean by:
 - `.planning/phase-$ARGUMENTS/2-SUMMARY.md`
 - `.planning/phase-$ARGUMENTS/3-SUMMARY.md`
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**Verify Phase $ARGUMENTS** — Run verification and UAT
-
-`/company-verify $ARGUMENTS`
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Verify phase | `/company-verify $ARGUMENTS` | Ready to test and get UAT approval |
+| Report issue | `/company-reply "..."` | Found a bug or need to flag a problem |
+| Check progress | `/company-progress` | See overall project status |
+| Pause work | `/company-pause` | Need to stop for now |
 ```

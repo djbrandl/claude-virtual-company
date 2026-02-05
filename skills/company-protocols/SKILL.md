@@ -516,3 +516,42 @@ EOF
 | Status | `artifacts/[role]/status.json` |
 | Proposals | `proposals/pending/[timestamp]-[type].json` |
 | Notifications | `inboxes/[role]/[timestamp]-[type].json` |
+
+---
+
+## What's Next Guidance
+
+Every skill output should end with contextual next action options. This keeps users within the framework workflow.
+
+### Standard "What's Next" Format
+
+```markdown
+---
+
+## ▶ What's Next?
+
+| Option | Command | Description |
+|--------|---------|-------------|
+| {Primary action} | `{command}` | {when to use} |
+| Report issue | `/company-reply "..."` | Found a bug or have feedback |
+| Check progress | `/company-progress` | See overall status |
+```
+
+### Context-Aware Options by Phase
+
+| Current Phase | Primary Options |
+|---------------|-----------------|
+| After discuss | `/company-plan-phase N`, `/company-reply`, `/company-progress` |
+| After plan | `/company-execute N`, `/company-reply`, `/company-progress` |
+| After execute | `/company-verify N`, `/company-reply`, `/company-progress` |
+| After verify (pass) | `/company-milestone`, `/company-progress`, `/company-pause` |
+| After verify (fail) | `/company-reply "issue"`, `/company-execute N`, `/company-progress` |
+| After reply | `/company-progress`, `/company-status` |
+| After pause | `/company-resume` (next session) |
+
+### Always Include
+
+- **`/company-reply`** - Escape valve for feedback, bugs, questions
+- **`/company-progress`** - Safe default to see recommended next step
+
+This prevents users from free-prompting outside the framework, which can cause state drift.

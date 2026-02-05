@@ -172,9 +172,12 @@ EOF
 ## Artifacts Created
 - `.planning/phase-{N}/CONTEXT.md`
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**Plan Phase {N}** — Create executable task breakdown
-
-`/company-plan-phase {N}`
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Plan the phase | `/company-plan-phase {N}` | Ready to create task breakdown |
+| More discussion | `/company-reply "..."` | Have more questions or preferences |
+| Check progress | `/company-progress` | See overall project status |
+| Pause work | `/company-pause` | Need to stop for now |
 ```

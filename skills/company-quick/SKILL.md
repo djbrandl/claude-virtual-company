@@ -227,4 +227,13 @@ $ARGUMENTS
 
 ## Logged To
 `.planning/quick/{N}-{slug}/DONE.md`
+
+## ▶ What's Next?
+
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Back to workflow | `/company-progress` | Continue with planned phases |
+| Another quick task | `/company-quick "..."` | More ad-hoc work |
+| Report issue | `/company-reply "..."` | Found something during the fix |
+| Check status | `/company-status` | See overall state |
 ```

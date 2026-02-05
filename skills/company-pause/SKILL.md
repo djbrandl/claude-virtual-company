@@ -136,4 +136,14 @@ Updated in `.planning/STATE.md`
 - `.planning/STATE.md` - Full context
 - `.planning/phase-{N}/CONTEXT.md` - Phase decisions
 - `.planning/phase-{N}/{plan}-PLAN.md` - Current plan
+
+---
+
+## ▶ When You Return
+
+| Action | Command | Description |
+|--------|---------|-------------|
+| Resume work | `/company-resume` | Restore context and continue |
+| Check status | `/company-progress` | See where things stand |
+| Quick task | `/company-quick "..."` | Handle something urgent first |
 ```

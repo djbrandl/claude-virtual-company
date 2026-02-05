@@ -304,11 +304,14 @@ EOF
 ## Phase Status
 COMPLETE
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**{Next phase or milestone completion}**
-
-`/company-progress`
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Continue workflow | `/company-progress` | See recommended next phase |
+| Complete milestone | `/company-milestone` | All phases done, ready to release |
+| Pause work | `/company-pause` | Need to stop for now |
+| Report feedback | `/company-reply "..."` | Have additional observations |
 ```
 
 ### On Failure
@@ -324,10 +327,12 @@ COMPLETE
 - Task {id}: Fix {issue 1}
 - Task {id}: Fix {issue 2}
 
-## Next Step
-Fix issues and re-run:
-`/company-execute $ARGUMENTS`
+## ▶ What's Next?
 
-Then verify again:
-`/company-verify $ARGUMENTS`
+| Option | Command | When to use |
+|--------|---------|-------------|
+| Report the issues | `/company-reply "..."` | Describe what's wrong in detail |
+| Re-execute phase | `/company-execute $ARGUMENTS` | After fixes are applied |
+| Check progress | `/company-progress` | See overall status |
+| Debug manually | `/company-quick "investigate..."` | Need ad-hoc investigation |
 ```

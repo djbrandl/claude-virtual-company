@@ -128,9 +128,14 @@ If current phase verified:
 ## Open Tasks
 {From TaskList()}
 
-## ▶ Next Up
+## ▶ What's Next?
 
-**{Recommended action}** — {one-line description}
+**Recommended:** `{command}` — {description}
 
-`{command to run}`
+| Other Options | Command | When to use |
+|---------------|---------|-------------|
+| Report issue | `/company-reply "..."` | Found a bug or have feedback |
+| Ad-hoc task | `/company-quick "..."` | Quick fix outside current phase |
+| Check status | `/company-status` | See detailed workflow state |
+| Pause work | `/company-pause` | Need to stop for now |
 ```
