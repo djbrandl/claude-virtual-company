@@ -8,5 +8,6 @@
   "pending_proposals": 0,
   "active_agents": [],
   "blockers": [],
-  "last_activity": null
+  "last_activity": null,
+  "playground_preference": null
 }

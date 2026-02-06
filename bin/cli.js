@@ -83,6 +83,7 @@ ${colors.bright}OTHER OPTIONS${colors.reset}
   --no-hooks          Skip hook installation (Claude only)
   --no-scripts        Skip Python script installation
   --no-claude-mem     Skip claude-mem installation prompt
+  --no-playground     Skip playground plugin installation prompt
   --help, -h          Show this help message
   --version, -v       Show version
 
@@ -187,6 +188,7 @@ async function init(options = {}) {
     path.join(companyDir, 'artifacts', 'developer'),
     path.join(companyDir, 'artifacts', 'qa'),
     path.join(companyDir, 'artifacts', 'discovery'),
+    path.join(companyDir, 'artifacts', 'playground'),
     path.join(companyDir, 'inboxes', 'cto'),
     path.join(companyDir, 'inboxes', 'architect'),
     path.join(companyDir, 'inboxes', 'ui-designer'),
@@ -306,6 +308,11 @@ async function init(options = {}) {
   if (adapters.some(a => a.name === 'claude') && !args.includes('--no-claude-mem')) {
     await promptClaudeMemInstall();
   }
+
+  // Prompt for playground plugin installation (Claude Code only)
+  if (adapters.some(a => a.name === 'claude') && !args.includes('--no-playground')) {
+    await promptPlaygroundInstall();
+  }
 }
 
 async function promptClaudeMemInstall() {
@@ -347,6 +354,51 @@ ${colors.bright}Dashboard (optional):${colors.reset}
 `);
   } else {
     log('\nSkipped claude-mem installation. You can install it later anytime.', 'yellow');
+  }
+}
+
+async function promptPlaygroundInstall() {
+  console.log(`
+${colors.cyan}═══════════════════════════════════════════════════════════════${colors.reset}
+${colors.bright}Optional: Interactive Playgrounds${colors.reset}
+
+The playground plugin creates interactive HTML files for visual
+decision-making during discussions, code reviews, and verification.
+
+${colors.yellow}Benefits:${colors.reset}
+  - Configure design preferences visually in your browser
+  - Review verification findings interactively
+  - Respond to code review comments with visual diff context
+  - Copy structured decisions back into the conversation
+
+${colors.yellow}How it works:${colors.reset}
+  - Skills generate self-contained HTML files (no external deps)
+  - Files open in your default browser automatically
+  - You interact, click "Copy Prompt", and paste back into Claude
+  - All skills fall back to text-based AskUserQuestion if declined
+
+${colors.yellow}Note:${colors.reset} Playgrounds require the playground skill plugin.
+Learn more: ${colors.blue}https://github.com/anthropics/claude-code-plugins${colors.reset}
+${colors.cyan}═══════════════════════════════════════════════════════════════${colors.reset}
+`);
+
+  const answer = await prompt(`${colors.green}Install playground support? (y/N): ${colors.reset}`);
+
+  if (answer === 'y' || answer === 'yes') {
+    console.log(`
+${colors.yellow}To install the playground plugin, run these commands in Claude Code:${colors.reset}
+
+  ${colors.cyan}claude${colors.reset}
+  ${colors.cyan}/install-plugin anthropics/claude-code-plugins --skill playground${colors.reset}
+
+${colors.bright}After installation:${colors.reset}
+  - Restart Claude Code to activate the plugin
+  - Playgrounds are offered automatically during discussions and verification
+  - You'll be asked to opt-in the first time a playground is available
+  - Say "enable playgrounds" or "disable playgrounds" anytime to change your preference
+`);
+  } else {
+    log('\nSkipped playground installation. You can install it later anytime.', 'yellow');
   }
 }
 
@@ -404,11 +456,15 @@ function installClaude(adapter, options) {
     log(`  Skipped (existing): ${skipped} skills`, 'yellow');
   }
 
-  // Install hooks
+  // Install hooks (always to LOCAL settings, never global — hooks reference relative .company/scripts/ paths)
   if (!skipHooks) {
     log('\nConfiguring Claude hooks...', 'yellow');
-    const settingsPath = path.join(targetBase, 'settings.json');
+    const hooksSettingsPath = path.join(claudeCheck.localPath, 'settings.json');
+    const settingsPath = hooksSettingsPath;
     const hooksTemplate = path.join(PACKAGE_ROOT, 'templates', 'claude-settings.json');
+    if (isGlobal) {
+      log('  Note: Hooks installed to local .claude/settings.json (they reference local .company/scripts/)', 'yellow');
+    }
 
     if (fs.existsSync(hooksTemplate)) {
       let existingSettings = {};

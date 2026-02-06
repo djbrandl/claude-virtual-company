@@ -26,6 +26,7 @@ Both providers share the same `.company/` state directory, so you can switch bet
 - **State Persistence**: Pause and resume work across sessions with full context
 - **Automatic Context Management**: Tiered document loading, context decay, and archival to prevent bloat
 - **Shared State**: Switch between providers seamlessly with persistent workflow state
+- **Interactive Playgrounds**: Optional HTML-based visual decision-making for discussions, reviews, and verification
 
 ## Quick Start
 
@@ -377,6 +378,8 @@ GEMINI.md                    # Project context for Gemini (root level)
 │   └── task-*.json
 ├── proposals/               # Pending/approved/rejected
 ├── artifacts/               # Role outputs
+│   ├── playground/          # Interactive HTML playgrounds
+│   └── ...                  # Per-role artifacts
 └── inboxes/                 # Role communication
 
 .planning/                   # Project Manager (GSD-inspired)
@@ -570,6 +573,55 @@ When creating handoffs or key artifacts, structure them with tiers:
 3. **FULL tier**: Rationale, alternatives considered, detailed context
 
 This ensures downstream roles get exactly the context they need without loading historical rationale they don't.
+
+## Interactive Playgrounds (Optional)
+
+The framework supports interactive HTML playgrounds for visual decision-making during discussions, code reviews, and verification. Playgrounds open in your browser as self-contained HTML files with no external dependencies.
+
+### What Playgrounds Provide
+
+| Playground Type | Used By | Purpose |
+|----------------|---------|---------|
+| **Design Playground** | Discussion, UI Designer | Configure layout, colors, spacing visually |
+| **Concept Map** | Discussion (Architecture) | Visualize service topology and connections |
+| **Document Critique** | Verification | Review findings interactively (approve/reject/discuss) |
+| **Diff Review** | Code Reviewer | Respond to review comments with visual diff context |
+| **Architecture Map** | Architect | Adjust component topology and patterns |
+
+### How It Works
+
+1. Skills generate self-contained HTML files in `.company/artifacts/playground/`
+2. Files open automatically in your default browser
+3. You interact with controls, configure preferences, review findings
+4. Click "Copy Prompt" to copy structured decisions
+5. Paste back into the conversation
+
+### Session Preference
+
+The first time a playground is available, you'll be asked to opt in:
+
+> "Would you like to use interactive HTML playgrounds for visual decision-making?"
+
+- Your preference is stored in `.company/state.json` under `playground_preference`
+- Say "enable playgrounds" or "disable playgrounds" anytime to change
+- All skills fall back gracefully to `AskUserQuestion` when playgrounds are disabled
+
+### Skipping Playgrounds
+
+Playgrounds are automatically skipped when:
+- Fewer than 3 gray areas in discussions
+- 0 findings in verification
+- Diff under 20 lines in code review
+- Running on Gemini CLI (no browser-open capability)
+
+### Installation
+
+During `cvc init`, you'll be prompted to install playground support. Or skip:
+```bash
+npx claude-virtual-company init --no-playground
+```
+
+---
 
 ## Enhanced Context Memory (Optional)
 

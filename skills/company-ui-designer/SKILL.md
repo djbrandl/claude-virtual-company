@@ -561,6 +561,172 @@ ls .company/artifacts/ui-designer/
 
 ---
 
+## Generate Design Playground (Optional)
+
+After creating wireframes and design system artifacts, generate an interactive design-playground HTML file. This allows the user (via the orchestrator) to fine-tune design tokens visually.
+
+**Generate the playground:**
+
+```bash
+mkdir -p .company/artifacts/playground
+
+cat > .company/artifacts/playground/ui-design.html << 'PLAYGROUND_EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Design: Design System Playground</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; }
+  .header { background: #1a1b26; border-bottom: 1px solid #2a2b3d; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .header h1 { font-size: 18px; color: #7aa2f7; }
+  .container { display: grid; grid-template-columns: 340px 1fr; grid-template-rows: 1fr auto; height: calc(100vh - 57px); }
+  .controls { background: #1a1b26; border-right: 1px solid #2a2b3d; padding: 20px; overflow-y: auto; }
+  .preview { padding: 24px; overflow-y: auto; }
+  .output { grid-column: 1 / -1; background: #1a1b26; border-top: 1px solid #2a2b3d; padding: 16px 24px; }
+  .section-title { font-size: 13px; font-weight: 600; color: #7aa2f7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .control-group { margin-bottom: 16px; }
+  .control-group label { display: block; font-size: 13px; color: #a9b1d6; margin-bottom: 6px; }
+  .control-group input[type="color"] { width: 48px; height: 32px; border: 1px solid #2a2b3d; border-radius: 4px; background: none; cursor: pointer; }
+  .control-group input[type="range"] { width: 100%; accent-color: #7aa2f7; }
+  .control-group select { width: 100%; padding: 8px 10px; background: #24283b; border: 1px solid #2a2b3d; border-radius: 6px; color: #e0e0e0; font-size: 13px; }
+  .color-row { display: flex; align-items: center; gap: 10px; }
+  .color-row span { font-size: 12px; color: #a9b1d6; }
+  .preview-component { margin-bottom: 20px; }
+  .preview-btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-right: 8px; margin-bottom: 8px; }
+  .preview-card { border: 1px solid #2a2b3d; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+  .preview-input { width: 200px; padding: 8px 12px; border: 1px solid #2a2b3d; border-radius: 6px; background: #24283b; color: #e0e0e0; font-size: 14px; }
+  .output-bar { display: flex; justify-content: space-between; align-items: center; }
+  .btn-copy { padding: 8px 16px; background: #9ece6a; color: #1a1b26; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .btn-copy:hover { background: #a6da7a; }
+  .prompt-output { background: #24283b; border: 1px solid #2a2b3d; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 120px; overflow-y: auto; margin-top: 8px; color: #a9b1d6; }
+  .copy-status { font-size: 13px; color: #9ece6a; opacity: 0; transition: opacity 0.3s; }
+  .copy-status.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="header"><h1>Design System Playground</h1></div>
+<div class="container">
+  <div class="controls">
+    <div class="section-title">Design Tokens</div>
+    <div class="control-group">
+      <label>Primary Color</label>
+      <div class="color-row"><input type="color" id="colorPrimary" value="#3B82F6"><span id="colorPrimaryVal">#3B82F6</span></div>
+    </div>
+    <div class="control-group">
+      <label>Secondary Color</label>
+      <div class="color-row"><input type="color" id="colorSecondary" value="#8B5CF6"><span id="colorSecondaryVal">#8B5CF6</span></div>
+    </div>
+    <div class="control-group">
+      <label>Accent Color</label>
+      <div class="color-row"><input type="color" id="colorAccent" value="#10B981"><span id="colorAccentVal">#10B981</span></div>
+    </div>
+    <div class="control-group">
+      <label>Spacing Base: <span id="spacingVal">8</span>px</label>
+      <input type="range" id="spacing" min="4" max="16" value="8" step="2">
+    </div>
+    <div class="control-group">
+      <label>Border Radius: <span id="radiusVal">6</span>px</label>
+      <input type="range" id="radius" min="0" max="24" value="6" step="2">
+    </div>
+    <div class="control-group">
+      <label>Heading Font</label>
+      <select id="fontHeading">
+        <option value="Inter, system-ui, sans-serif">Inter (System)</option>
+        <option value="Georgia, serif">Georgia (Serif)</option>
+        <option value="'Fira Code', monospace">Fira Code (Mono)</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Shadow Preset</label>
+      <select id="shadow">
+        <option value="0 1px 3px rgba(0,0,0,0.12)">Subtle</option>
+        <option value="0 4px 6px rgba(0,0,0,0.15)">Medium</option>
+        <option value="0 10px 25px rgba(0,0,0,0.2)">Dramatic</option>
+        <option value="none">None</option>
+      </select>
+    </div>
+  </div>
+  <div class="preview" id="previewArea">
+    <div class="section-title">Component Preview</div>
+    <div class="preview-component">
+      <h3 style="margin-bottom:12px" id="previewHeading">Heading Sample</h3>
+      <p style="margin-bottom:16px;color:#a9b1d6">Body text with the selected design tokens applied.</p>
+      <button class="preview-btn" id="btnPrimary">Primary Button</button>
+      <button class="preview-btn" id="btnSecondary">Secondary</button>
+      <button class="preview-btn" id="btnAccent">Accent</button>
+    </div>
+    <div class="preview-component">
+      <div class="preview-card" id="previewCard">
+        <h4 style="margin-bottom:8px">Card Component</h4>
+        <p style="font-size:13px;color:#a9b1d6">Card with applied border-radius and shadow.</p>
+      </div>
+    </div>
+    <div class="preview-component">
+      <input class="preview-input" id="previewInput" placeholder="Input component" />
+    </div>
+  </div>
+  <div class="output">
+    <div class="output-bar">
+      <div class="section-title" style="margin-bottom:0">Generated Prompt</div>
+      <div><span class="copy-status" id="copyStatus">Copied!</span> <button class="btn-copy" onclick="copyPrompt()">Copy Prompt</button></div>
+    </div>
+    <div class="prompt-output" id="promptOutput"></div>
+  </div>
+</div>
+<script>
+function updatePreview() {
+  const primary = document.getElementById('colorPrimary').value;
+  const secondary = document.getElementById('colorSecondary').value;
+  const accent = document.getElementById('colorAccent').value;
+  const sp = document.getElementById('spacing').value;
+  const rad = document.getElementById('radius').value;
+  const font = document.getElementById('fontHeading').value;
+  const shadow = document.getElementById('shadow').value;
+  document.getElementById('colorPrimaryVal').textContent = primary;
+  document.getElementById('colorSecondaryVal').textContent = secondary;
+  document.getElementById('colorAccentVal').textContent = accent;
+  document.getElementById('spacingVal').textContent = sp;
+  document.getElementById('radiusVal').textContent = rad;
+  document.getElementById('btnPrimary').style.cssText = 'background:'+primary+';color:#fff;border-radius:'+rad+'px;padding:'+sp+'px '+(sp*2.5)+'px;border:none;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;margin-bottom:8px';
+  document.getElementById('btnSecondary').style.cssText = 'background:'+secondary+';color:#fff;border-radius:'+rad+'px;padding:'+sp+'px '+(sp*2.5)+'px;border:none;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;margin-bottom:8px';
+  document.getElementById('btnAccent').style.cssText = 'background:'+accent+';color:#fff;border-radius:'+rad+'px;padding:'+sp+'px '+(sp*2.5)+'px;border:none;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;margin-bottom:8px';
+  document.getElementById('previewCard').style.borderRadius = rad+'px';
+  document.getElementById('previewCard').style.boxShadow = shadow;
+  document.getElementById('previewInput').style.borderRadius = rad+'px';
+  document.getElementById('previewHeading').style.fontFamily = font;
+}
+function buildPrompt() {
+  const primary = document.getElementById('colorPrimary').value;
+  const secondary = document.getElementById('colorSecondary').value;
+  const accent = document.getElementById('colorAccent').value;
+  const sp = document.getElementById('spacing').value;
+  const rad = document.getElementById('radius').value;
+  const font = document.getElementById('fontHeading').value;
+  const shadow = document.getElementById('shadow').selectedOptions[0].text;
+  return 'PLAYGROUND DECISIONS:\n- Colors: primary='+primary+', secondary='+secondary+', accent='+accent+'\n- Spacing: base='+sp+'px\n- Border radius: '+rad+'px\n- Heading font: '+font+'\n- Shadow preset: '+shadow;
+}
+function copyPrompt() {
+  navigator.clipboard.writeText(document.getElementById('promptOutput').textContent).then(() => {
+    const s = document.getElementById('copyStatus'); s.classList.add('show'); setTimeout(() => s.classList.remove('show'), 2000);
+  });
+}
+function refresh() { updatePreview(); document.getElementById('promptOutput').textContent = buildPrompt(); }
+document.addEventListener('DOMContentLoaded', refresh);
+document.addEventListener('input', refresh);
+document.addEventListener('change', refresh);
+</script>
+</body>
+</html>
+PLAYGROUND_EOF
+```
+
+The orchestrator will detect this file and present it to the user (see company orchestrator's Playground Presentation Protocol).
+
+---
+
 ## Completion
 
 ```bash

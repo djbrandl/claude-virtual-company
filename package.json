@@ -1,6 +1,6 @@
 {
   "name": "claude-virtual-company",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A skill framework for AI coding assistants (Claude Code & Gemini CLI) that simulates a virtual software development company with hierarchical roles, governance, and quality gates",
   "main": "src/install.js",
   "bin": {
@@ -35,7 +35,8 @@
     "code-review",
     "git-flow",
     "mcp",
-    "model-context-protocol"
+    "model-context-protocol",
+    "playground"
   ],
   "author": "",
   "license": "MIT",

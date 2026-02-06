@@ -462,6 +462,133 @@ ls .company/artifacts/architect/
 
 ---
 
+## Generate Architecture Playground (Optional)
+
+After creating component design and API contracts, generate an interactive code-map playground HTML. This allows the user (via the orchestrator) to visualize and adjust the component topology.
+
+**Generate the playground:**
+
+```bash
+mkdir -p .company/artifacts/playground
+
+cat > .company/artifacts/playground/architecture-map.html << 'PLAYGROUND_EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture: Component Map</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; }
+  .header { background: #1a1b26; border-bottom: 1px solid #2a2b3d; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .header h1 { font-size: 18px; color: #7aa2f7; }
+  .container { display: grid; grid-template-columns: 340px 1fr; grid-template-rows: 1fr auto; height: calc(100vh - 57px); }
+  .controls { background: #1a1b26; border-right: 1px solid #2a2b3d; padding: 20px; overflow-y: auto; }
+  .preview { padding: 24px; overflow-y: auto; position: relative; }
+  .output { grid-column: 1 / -1; background: #1a1b26; border-top: 1px solid #2a2b3d; padding: 16px 24px; }
+  .section-title { font-size: 13px; font-weight: 600; color: #7aa2f7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .control-group { margin-bottom: 16px; }
+  .control-group label { display: block; font-size: 13px; color: #a9b1d6; margin-bottom: 6px; }
+  .control-group select { width: 100%; padding: 8px 10px; background: #24283b; border: 1px solid #2a2b3d; border-radius: 6px; color: #e0e0e0; font-size: 13px; }
+  .node-toggle { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+  .node-toggle:hover { background: #24283b; }
+  .node-toggle input { accent-color: #7aa2f7; }
+  .layer { border: 1px dashed #2a2b3d; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .layer-title { font-size: 12px; color: #565f89; text-transform: uppercase; margin-bottom: 10px; }
+  .node { display: inline-block; background: #24283b; border: 1px solid #3d4466; border-radius: 8px; padding: 10px 16px; margin: 4px; font-size: 13px; }
+  .node-api { border-color: #7aa2f7; color: #7aa2f7; }
+  .node-service { border-color: #9ece6a; color: #9ece6a; }
+  .node-data { border-color: #e0af68; color: #e0af68; }
+  .connection { font-size: 12px; color: #565f89; padding: 4px 0; }
+  .output-bar { display: flex; justify-content: space-between; align-items: center; }
+  .btn-copy { padding: 8px 16px; background: #9ece6a; color: #1a1b26; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .btn-copy:hover { background: #a6da7a; }
+  .prompt-output { background: #24283b; border: 1px solid #2a2b3d; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 120px; overflow-y: auto; margin-top: 8px; color: #a9b1d6; }
+  .copy-status { font-size: 13px; color: #9ece6a; opacity: 0; transition: opacity 0.3s; }
+  .copy-status.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="header"><h1>Architecture: Component Map</h1></div>
+<div class="container">
+  <div class="controls">
+    <div class="section-title">Components</div>
+    <div class="control-group">
+      <label>Toggle components to include:</label>
+      <div id="nodeToggles">
+        <!-- Populated by component-design.md data -->
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:16px">Connection Types</div>
+    <div class="control-group" id="connectionControls">
+      <!-- Populated by component relationships -->
+    </div>
+    <div class="section-title" style="margin-top:16px">Pattern Selection</div>
+    <div class="control-group">
+      <label>API Layer Pattern</label>
+      <select id="patternApi">
+        <option value="Controller + DTO">Controller + DTO</option>
+        <option value="GraphQL Resolvers">GraphQL Resolvers</option>
+        <option value="tRPC Procedures">tRPC Procedures</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Business Layer Pattern</label>
+      <select id="patternBusiness">
+        <option value="Service Layer">Service Layer</option>
+        <option value="CQRS">CQRS</option>
+        <option value="Domain Services">Domain Services</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Data Layer Pattern</label>
+      <select id="patternData">
+        <option value="Repository">Repository</option>
+        <option value="Active Record">Active Record</option>
+        <option value="Data Mapper">Data Mapper</option>
+      </select>
+    </div>
+  </div>
+  <div class="preview" id="previewArea">
+    <div class="section-title">Architecture Diagram</div>
+    <div id="diagram"></div>
+  </div>
+  <div class="output">
+    <div class="output-bar">
+      <div class="section-title" style="margin-bottom:0">Generated Prompt</div>
+      <div><span class="copy-status" id="copyStatus">Copied!</span> <button class="btn-copy" onclick="copyPrompt()">Copy Prompt</button></div>
+    </div>
+    <div class="prompt-output" id="promptOutput"></div>
+  </div>
+</div>
+<script>
+function buildPrompt() {
+  const api = document.getElementById('patternApi').value;
+  const biz = document.getElementById('patternBusiness').value;
+  const data = document.getElementById('patternData').value;
+  const enabled = Array.from(document.querySelectorAll('#nodeToggles input:checked')).map(i => i.value);
+  return 'PLAYGROUND DECISIONS:\n- Components: '+enabled.join(', ')+'\n- API pattern: '+api+'\n- Business pattern: '+biz+'\n- Data pattern: '+data;
+}
+function copyPrompt() {
+  navigator.clipboard.writeText(document.getElementById('promptOutput').textContent).then(() => {
+    const s = document.getElementById('copyStatus'); s.classList.add('show'); setTimeout(() => s.classList.remove('show'), 2000);
+  });
+}
+function refresh() { document.getElementById('promptOutput').textContent = buildPrompt(); }
+document.addEventListener('DOMContentLoaded', refresh);
+document.addEventListener('input', refresh);
+document.addEventListener('change', refresh);
+</script>
+</body>
+</html>
+PLAYGROUND_EOF
+```
+
+The orchestrator will detect this file and present it to the user (see company orchestrator's Playground Presentation Protocol).
+
+---
+
 ## Completion
 
 ```bash

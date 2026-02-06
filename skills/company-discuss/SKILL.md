@@ -7,6 +7,7 @@ argument-hint: [phase-number]
 skills:
   - company-protocols
   - company-project-manager
+  - company-playground
 allowed-tools:
   - Read
   - Write
@@ -75,6 +76,68 @@ Based on the phase type, identify gray areas:
 - Event/message formats
 - Retry/failure handling
 - Monitoring approach
+
+### Step 2.5: Offer Interactive Playground (Optional)
+
+Before falling back to text-based questions, check if an interactive playground would be beneficial. Follow the **company-playground** preference protocol:
+
+1. Read `.company/state.json` — check `playground_preference`
+2. If `null`, ask the user if they want playgrounds (see company-playground protocol)
+3. If `"disabled"` or Gemini CLI, skip to Step 3
+
+**When to offer a playground:**
+- **UI/Frontend phases** (3+ gray areas about layout, colors, spacing, components): Generate a **design-playground** HTML
+- **Architecture phases** (4+ gray areas about services, connections, patterns): Generate a **concept-map** HTML
+- **All other cases** or < 3 gray areas: Skip to Step 3
+
+**Playground generation (if applicable):**
+
+```bash
+# Ensure playground directory exists
+mkdir -p .company/artifacts/playground
+```
+
+Generate a self-contained HTML file using the **company-playground** shared HTML skeleton. Customize:
+- **Controls**: One control group per gray area with the identified options as radio buttons or dropdowns
+- **Preview**: For UI phases, show a wireframe preview that updates with selections. For architecture phases, show a node/connection diagram
+- **buildPrompt()**: Collect all selections into a structured `PLAYGROUND DECISIONS:` block
+
+Write the HTML to `.company/artifacts/playground/discuss-phase-{N}.html` where `{N}` is the phase number.
+
+**Open in browser:**
+```bash
+# Open the playground (cross-platform)
+case "$(uname -s 2>/dev/null || echo Windows)" in
+  MINGW*|MSYS*|CYGWIN*|Windows*)
+    start "" ".company/artifacts/playground/discuss-phase-{N}.html"
+    ;;
+  Darwin*)
+    open ".company/artifacts/playground/discuss-phase-{N}.html"
+    ;;
+  Linux*)
+    xdg-open ".company/artifacts/playground/discuss-phase-{N}.html"
+    ;;
+esac
+```
+
+**Ask for paste-back:**
+```
+AskUserQuestion({
+  questions: [{
+    header: "Playground",
+    question: "I've opened a discussion playground in your browser with controls for each gray area. Configure your preferences, click 'Copy Prompt', and paste the output here. Or skip to use text questions instead.",
+    options: [
+      { label: "Paste Output", description: "I'll paste the playground output (use 'Other' to paste)" },
+      { label: "Skip Playground", description: "Use text-based questions instead" }
+    ]
+  }]
+})
+```
+
+- If user pastes output: Parse the `PLAYGROUND DECISIONS:` block, treat each decision as a resolved gray area, skip to Step 4
+- If user skips: Continue to Step 3
+
+---
 
 ### Step 3: Ask Clarifying Questions
 

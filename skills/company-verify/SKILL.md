@@ -7,6 +7,7 @@ argument-hint: [phase-number]
 skills:
   - company-protocols
   - company-project-manager
+  - company-playground
 allowed-tools:
   - Read
   - Write
@@ -184,6 +185,77 @@ Write to `.planning/phase-$ARGUMENTS/VERIFICATION.md`
 ---
 
 ## Layer 3: User Acceptance Testing
+
+### Playground-Enhanced UAT (Optional)
+
+Before using text-based UAT, check if a verification playground would be beneficial. Follow the **company-playground** preference protocol:
+
+1. Read `.company/state.json` — check `playground_preference`
+2. If `null`, ask the user if they want playgrounds (see company-playground protocol)
+3. If `"disabled"` or Gemini CLI, skip to standard UAT Protocol below
+
+**When to offer a verification playground:**
+- Automated checks produced 1+ findings (failed tests, lint errors, missing artifacts, verification command failures)
+- If 0 findings, skip to standard UAT Protocol
+
+**Playground generation (if applicable):**
+
+```bash
+mkdir -p .company/artifacts/playground
+```
+
+Generate a **document-critique** playground HTML using the **company-playground** shared HTML skeleton:
+
+- **Left panel (controls)**: List each finding as an interactive card with:
+  - Finding title and category badge (Blocker/Issue/Suggestion)
+  - File path and line number (if applicable)
+  - Status toggle: Approve (accept finding) / Reject (disagree) / Needs Discussion
+  - Comment textarea for notes
+- **Right panel (preview)**: Summary dashboard showing:
+  - Total findings count by category
+  - Disposition counts (N approved, N rejected, N needs discussion)
+  - Overall status indicator (PASS if no unresolved blockers, FAIL otherwise)
+- **buildPrompt()**: Collect all dispositions into:
+  ```
+  PLAYGROUND DECISIONS:
+  - Finding 1: [APPROVED/REJECTED/DISCUSS] - [comment]
+  - Overall: [PASS/FAIL/CONDITIONAL]
+  ```
+
+Write to `.company/artifacts/playground/verify-phase-{N}.html` where `{N}` is the phase number.
+
+**Open and ask for paste-back:**
+```bash
+case "$(uname -s 2>/dev/null || echo Windows)" in
+  MINGW*|MSYS*|CYGWIN*|Windows*)
+    start "" ".company/artifacts/playground/verify-phase-{N}.html"
+    ;;
+  Darwin*)
+    open ".company/artifacts/playground/verify-phase-{N}.html"
+    ;;
+  Linux*)
+    xdg-open ".company/artifacts/playground/verify-phase-{N}.html"
+    ;;
+esac
+```
+
+```
+AskUserQuestion({
+  questions: [{
+    header: "Verification",
+    question: "I've opened a verification playground with the findings from automated checks. Review each finding, mark as Approve/Reject/Discuss, then click 'Copy Prompt' and paste here. Or skip to review findings one by one.",
+    options: [
+      { label: "Paste Output", description: "I'll paste the playground output (use 'Other' to paste)" },
+      { label: "Skip Playground", description: "Review findings via text questions instead" }
+    ]
+  }]
+})
+```
+
+- If user pastes output: Parse dispositions, apply to VERIFICATION.md, continue to UAT.md creation
+- If user skips: Continue to standard UAT Protocol below
+
+---
 
 ### UAT Protocol
 
